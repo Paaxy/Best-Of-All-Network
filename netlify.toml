@@ -1,5 +1,0 @@
-[[headers]]
-  for = "/sitemap.xml"
-  [headers.values]
-    Content-Type = "text/xml"
-    X-Content-Type-Options = "nosniff"
