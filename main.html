@@ -19,9 +19,9 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
             min-height: 100vh;
+            background-color: #f4f4f4; /* Example background color */
         }
         
         header {
@@ -80,6 +80,7 @@
             padding: 20px;
             color: white;
             margin-top: 40px;
+            background: #1e90ff; /* Example footer background */
         }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,21 +122,99 @@
     </nav>
     <main>
         <h1>Welcome to Best Of All - NETWORK</h1>
-        <!-- 
-            GATEWAY PAGE
-            
-            This is the main landing page that serves as a central hub for users to access
-            a curated collection of the web's best content. The page welcomes visitors and 
-            guides them toward discovering entertainment, staying updated with the latest news,
-            exploring trending media, and reading engaging articles—all conveniently organized
-            in one welcoming destination.
-        -->
         <p>Welcome to your ultimate gateway to the best content on the web. Best Of All - NETWORK is a curated hub designed to bring you the finest entertainment, latest updates, and trending media all in one welcoming destination. Whether you're looking for engaging articles, exciting videos, popular games, or the most current news, our platform aggregates the best of what the internet has to offer. We're dedicated to connecting you with quality content that matters, carefully selected to keep you entertained, informed, and engaged. Explore our network today and discover why we're your go-to source for everything worth your time online.</p>
         <p>*This project is still in development, but we're constantly working to improve and expand our content offerings.*</p>
     </main>
     <footer>
         <p>&copy; 2026 Best Of All - NETWORK. All rights reserved.</p>
     </footer>  
-     <script src="main.js" defer></script>
+    <script src="main.js" defer></script>
+    <style>
+        * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+        color: #e0e0e0;
+        min-height: 100vh;
+    }
+
+    header {
+        background: linear-gradient(135deg, #00bcd4, #0097a7);
+        padding: 40px 20px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0, 188, 212, 0.3);
+    }
+
+    header img {
+        margin-top: 20px;
+        border-radius: 50%;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease;
+    }
+
+    header img:hover {
+        transform: scale(1.05);
+    }
+
+    nav {
+        background: linear-gradient(135deg, #00bcd4, #0097a7);
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        box-shadow: 0 8px 16px rgba(0, 188, 212, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    nav a {
+        padding: 12px 25px;
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        font-weight: 700;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    nav a:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        border-color: white;
+    }
+
+    main {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+        color: #00e5ff;
+        margin-bottom: 20px;
+    }
+
+    p {
+        line-height: 1.6;
+        margin-bottom: 15px;
+        color: #b0b0b0;
+    }
+
+    footer {
+        background: linear-gradient(135deg, #0a0e27, #1a1f3a);
+        padding: 30px 20px;
+        text-align: center;
+        color: white;
+    }
+    </style>
 </body>
 </html>
