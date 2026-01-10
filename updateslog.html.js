@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Make logo clickable (go home)
     const logo = document.getElementById('logo');
-    if (logo) logo.addEventListener('click', () => { location.href = 'updateslog.html'; });
+    if (logo) logo.addEventListener('click', () => { location.href = 'main.html'; });
 
     // Lightweight pageview log
     console.info('Best Of All - NETWORK — pageview:', location.pathname + location.search + location.hash);
