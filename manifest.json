@@ -2,23 +2,59 @@
   "name": "Best Of All Network",
   "short_name": "BOAN",
   "description": "Experience the Best Of All Network in a sleek, app-like interface with a fresh blue and white theme.",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#007BFF",
-  "orientation": "portrait-primary",
   "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
   "icons": [
-  {
-    "src": "logo.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  },
-  {
-    "src": "logo.png",
-    "sizes": "512x512",
-    "type": "image/png"
-  }
-]
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Main Hub",
+      "short_name": "Main",
+      "url": "/main",
+      "icons": [{ "src": "logo.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Entertainment Hub",
+      "short_name": "Fun",
+      "url": "/entertainment",
+      "icons": [{ "src": "logo.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Updates Log",
+      "short_name": "Updates",
+      "url": "/updateslog",
+      "icons": [{ "src": "logo.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "About Best Of All Network",
+      "short_name": "About",
+      "url": "/about",
+      "icons": [{ "src": "logo.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Information",
+      "short_name": "Info",
+      "url": "/information",
+      "icons": [{ "src": "logo.png", "sizes": "96x96", "type": "image/png" }]
+    }
+  ]
 }
