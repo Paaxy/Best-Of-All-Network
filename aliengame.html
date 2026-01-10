@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alien Shooter</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+      color: white;
+    }
+
+    #game-container {
+      position: relative;
+      width: 640px;
+      height: 360px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    canvas {
+      display: block;
+      background: #000;
+      width: 100%;
+      height: 100%;
+    }
+
+    #livesBar {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .controls {
+      position: absolute;
+      top: 35px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      font-size: 14px;
+      padding: 6px 12px;
+      background-color: #222;
+      color: white;
+      border: 1px solid white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #444;
+    }
+
+    .mobile-controls {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: grid;
+      grid-template-columns: repeat(3, 50px);
+      grid-template-rows: 50px 50px;
+      gap: 8px;
+    }
+
+    .mobile-controls button {
+      width: 50px;
+      height: 50px;
+      font-size: 18px;
+      padding: 0;
+    }
+
+    #shootBtn {
+      grid-column: 2 / 3;
+      grid-row: 1 / 2;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="gameCanvas" width="640" height="360"></canvas>
+    <div id="livesBar">Lives: 3</div>
+    <div id="gameOverLabel" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+font-size: 32px; color: red; font-weight: bold;">Game Over!</div>
+
+<button id="restartBtn" style="display: none; position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);
+font-size: 18px; padding: 10px 20px; background-color: #222; color: white; border: 1px solid white; border-radius: 5px; cursor: pointer;">
+Restart
+</button>
+
+    <div class="controls">
+      <button id="pauseBtn">Pause</button>
+      <button id="fullscreenBtn">Fullscreen</button>
+    </div>
+    <div class="mobile-controls">
+      <button id="up">⬆️</button>
+      <button id="down">⬇️</button>
+      <button id="left">⬅️</button>
+      <button id="right">➡️</button>
+      <button id="shootBtn">🔥Shoot🔫</button>
+    </div>
+ </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+const playerImg = new Image();
+const alienImg = new Image();
+let assetsLoaded = 0;
+
+playerImg.src = 'https://www.pngmart.com/files/3/Spaceship-PNG-File.png';
+alienImg.src = 'UFO.png';
+
+playerImg.onload = checkAssetsLoaded;
+alienImg.onload = checkAssetsLoaded;
+
+function checkAssetsLoaded() {
+  assetsLoaded++;
+  if (assetsLoaded === 2) {
+    setupMobileControls();
+    createAliens();
+    gameLoop();
+  }
+}
+
+
+
+    const player = { x: canvas.width / 2 - 25, y: canvas.height - 60, width: 25, height: 25, speed: 3, lives: 3 };
+    const bullets = [];
+    const alienBullets = [];
+    const aliens = [];
+    let shooting = false;
+    let keys = { up: false, down: false, left: false, right: false };
+    let isPaused = false;
+    let score = 0;
+
+    function movePlayer() {
+      if (keys.up && player.y > 0) player.y -= player.speed;
+      if (keys.down && player.y < canvas.height - player.height) player.y += player.speed;
+      if (keys.left && player.x > 0) player.x -= player.speed;
+      if (keys.right && player.x < canvas.width - player.width) player.x += player.speed;
+    }
+
+    function moveBullets() {
+      bullets.forEach((bullet, index) => {
+        bullet.y -= bullet.speed;
+        if (bullet.y < 0) bullets.splice(index, 1);
+      });
+
+      alienBullets.forEach((bullet, index) => {
+        bullet.y += bullet.speed;
+        if (bullet.y > canvas.height) alienBullets.splice(index, 1);
+      });
+    }
+
+    function createAliens() {
+  setInterval(() => {
+    if (!isPaused) {
+      const alien = {
+        x: Math.random() * (canvas.width - 50),
+        y: -50,
+        width: 50,
+        height: 50,
+        speed: 1.5, // ← Fixed speed here!
+      };
+      aliens.push(alien);
+    }
+  }, 1000);
+}
+
+    function alienShoot() {
+      aliens.forEach((alien) => {
+        if (Math.random() < 0.01) {
+          alienBullets.push({
+            x: alien.x + alien.width / 2 - 2.5,
+            y: alien.y + alien.height,
+            width: 5,
+            height: 15,
+            speed: 3,
+          });
+        }
+      });
+    }
+
+    function moveAliens() {
+      aliens.forEach((alien, index) => {
+        alien.y += alien.speed;
+        if (alien.y > canvas.height) aliens.splice(index, 1);
+      });
+    }
+
+    function shoot() {
+      if (shooting && bullets.length < 3) {
+        bullets.push({
+          x: player.x + player.width / 2 - 2.5,
+          y: player.y,
+          width: 5,
+          height: 15,
+          speed: 3,
+        });
+      }
+    }
+    
+
+    function checkCollision() {
+      bullets.forEach((bullet, bIndex) => {
+        aliens.forEach((alien, aIndex) => {
+          if (
+            bullet.x < alien.x + alien.width &&
+            bullet.x + bullet.width > alien.x &&
+            bullet.y < alien.y + alien.height &&
+            bullet.y + bullet.height > alien.y
+          ) {
+            aliens.splice(aIndex, 1);
+            bullets.splice(bIndex, 1);
+            score += 10;
+          }
+        });
+      });
+
+      alienBullets.forEach((bullet, bIndex) => {
+        if (
+          bullet.x < player.x + player.width &&
+          bullet.x + bullet.width > player.x &&
+          bullet.y < player.y + player.height &&
+          bullet.y + bullet.height > player.y
+        ) {
+          player.lives--;
+          alienBullets.splice(bIndex, 1);
+          if (player.lives <= 0) {
+            document.getElementById('gameOverLabel').style.display = 'block';
+isPaused = true;
+
+          }
+        }
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+// Draw player
+ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
+
+// Draw aliens
+aliens.forEach((alien) => {
+  ctx.drawImage(alienImg, alien.x, alien.y, alien.width, alien.height);
+});
+
+
+      ctx.fillStyle = 'yellow';
+      bullets.forEach((bullet) => {
+        ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+      });
+
+      ctx.fillStyle = 'red';
+      alienBullets.forEach((bullet) => {
+        ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+      });
+
+      document.getElementById('livesBar').textContent = `Lives: ${player.lives}`;
+      ctx.font = '16px Arial';
+      ctx.fillStyle = 'white';
+      ctx.fillText(`Score: ${score}`, 20, 30);
+    }
+
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      const container = document.getElementById('game-container');
+      if (!document.fullscreenElement) {
+        container.requestFullscreen().catch((err) => {
+          console.error(`Error attempting fullscreen: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    document.getElementById('pauseBtn').addEventListener('click', () => {
+      isPaused = !isPaused;
+    });
+
+    function setupMobileControls() {
+      const mobileButtons = {
+        up: document.getElementById('up'),
+        down: document.getElementById('down'),
+        left: document.getElementById('left'),
+        right: document.getElementById('right'),
+        shoot: document.getElementById('shootBtn'),
+      };
+
+      Object.entries(mobileButtons).forEach(([key, button]) => {
+        button.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          if (key === 'shoot') {
+            shooting = true;
+          } else {
+            keys[key] = true;
+          }
+        });
+
+        button.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          if (key === 'shoot') {
+            shooting = false;
+          } else {
+            keys[key] = false;
+          }
+        });
+      });
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') keys.up = true;
+      if (e.key === 'ArrowDown') keys.down = true;
+      if (e.key === 'ArrowLeft') keys.left = true;
+      if (e.key === 'ArrowRight') keys.right = true;
+      if (e.code === 'Space') shooting = true;
+    });
+    window.addEventListener('keyup', (e) => {
+  if (e.code === 'ArrowUp') keys.up = false;
+  if (e.code === 'ArrowDown') keys.down = false;
+  if (e.code === 'ArrowLeft') keys.left = false;
+  if (e.code === 'ArrowRight') keys.right = false;
+  if (e.code === 'Space') shooting = false;
+});
+
+    function gameLoop() {
+      if (!isPaused) {
+        movePlayer();
+        moveBullets();
+        moveAliens();
+        alienShoot();
+        shoot();
+        checkCollision();
+      }
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    createAliens();
+    setupMobileControls();
+    gameLoop();
+  </script>

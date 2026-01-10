@@ -1,0 +1,2 @@
+https://developer.chrome.com/docs/workbox/#options_used_by_generatesw
+https://developer.chrome.com/docs/workbox/#generatesw

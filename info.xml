@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <name>Best-Of-All NETWORK</name>
+    <description>A comprehensive network project for distributed systems and communication protocols</description>
+    <version>1.0.0</version>
+    <author>Best Of All Network Team and Co</author>
+    <license>MIT</license>
+    <repository>https://github.com/Paaxy/Best-Of-All---NETWORK.github.io</repository>
+    <homepage>https://best-of-all-network.netlify.app</homepage>
+    
+    <modules>
+        <module name="core" description="Core network functionality and socket management"/>
+        <module name="api" description="RESTful API interfaces and endpoints"/>
+        <module name="utils" description="Utility functions and helpers"/>
+        <module name="security" description="Authentication and encryption modules"/>
+    </modules>
+    
+    <dependencies>
+        <dependency name="example-lib" version="1.0" required="true"/>
+        <dependency name="log4j" version="2.17.0" required="true"/>
+    </dependencies>   
+    
+    <tags>
+        <tag>network</tag>
+        <tag>distributed-systems</tag>
+        <tag>communication</tag>
+    </tags>
+</project>
