@@ -50,5 +50,43 @@
         <p>&copy; 2025 Best Of All Network. All rights reserved.</p>
     </footer>
     <script src="about.js" defer></script>
+    <script>
+function resizeEverything() {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  // Resize canvas if present
+  const canvas = document.querySelector('canvas');
+  if (canvas) {
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    canvas.width = width;
+    canvas.height = height;
+  }
+
+  // Resize Three.js renderer and camera if they exist
+  if (window.renderer && window.camera) {
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  }
+
+  // Resize full-screen containers
+  const fullElements = document.querySelectorAll(
+    '.fullscreen, .fullpage, #app, #main, #game'
+  );
+  fullElements.forEach(el => {
+    el.style.width = width + 'px';
+    el.style.height = height + 'px';
+  });
+}
+
+// Run once on load
+window.addEventListener('DOMContentLoaded', resizeEverything);
+
+// Re-run on window resize
+window.addEventListener('resize', resizeEverything);
+</script>
+
 </body>
 </html>
