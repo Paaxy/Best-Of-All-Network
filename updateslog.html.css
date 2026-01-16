@@ -131,14 +131,22 @@ footer{margin-top:22px;text-align:center;color:#c9eaf0;padding:12px}
 html, body {
   margin: 0;
   padding: 0;
-  width: 100vw;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+#app {
   display: flex;
   flex-direction: column;
-}
-body {
-  background: linear-gradient(135deg, #0a0e27, #1a1f3a);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #e8f6f8;
-  overflow-x: hidden;
+  height: 100%;
+  width: 100%;
 }
