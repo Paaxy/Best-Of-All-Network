@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation Examples</title>
+    <!-- Link the global animations stylesheet -->
+    <link rel="stylesheet" href="animations.css">
+    <style>
+        :root {
+            --primary: #00d9ff;
+            --secondary: #0099ff;
+            --bg-dark: #0a0e27;
+            --text-light: #e0e7ff;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(0, 217, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #050a1a 100%);
+            color: var(--text-light);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .demo-section {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .demo-section h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .demo-box {
+            background: rgba(0, 217, 255, 0.1);
+            border: 2px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .demo-box p {
+            font-size: 0.9rem;
+            color: #a0aec0;
+            margin-top: 10px;
+        }
+
+        code {
+            display: block;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            color: #00d9ff;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; margin-bottom: 40px; animation: slideInDown 0.8s ease-out;">
+        🎬 Animation Examples & Usage Guide
+    </h1>
+
+    <!-- ENTRANCE ANIMATIONS -->
+    <div class="demo-section animate-slideInUp">
+        <h2>📍 Entrance Animations</h2>
+        <p>These animations play when elements first appear on the page</p>
+        
+        <div class="demo-grid">
+            <div class="demo-box animate-slideInDown">
+                <strong>Slide In Down</strong>
+                <p>Slides in from top</p>
+                <code>&lt;div class="animate-slideInDown"&gt;</code>
+            </div>
+            <div class="demo-box animate-slideInUp" style="animation-delay: 0.1s;">
+                <strong>Slide In Up</strong>
+                <p>Slides in from bottom</p>
+                <code>&lt;div class="animate-slideInUp"&gt;</code>
+            </div>
+            <div class="demo-box animate-slideInLeft" style="animation-delay: 0.2s;">
+                <strong>Slide In Left</strong>
+                <p>Slides in from left</p>
+                <code>&lt;div class="animate-slideInLeft"&gt;</code>
+            </div>
+            <div class="demo-box animate-slideInRight" style="animation-delay: 0.3s;">
+                <strong>Slide In Right</strong>
+                <p>Slides in from right</p>
+                <code>&lt;div class="animate-slideInRight"&gt;</code>
+            </div>
+            <div class="demo-box animate-scaleIn" style="animation-delay: 0.4s;">
+                <strong>Scale In</strong>
+                <p>Scales up smoothly</p>
+                <code>&lt;div class="animate-scaleIn"&gt;</code>
+            </div>
+            <div class="demo-box animate-bounceIn" style="animation-delay: 0.5s;">
+                <strong>Bounce In</strong>
+                <p>Bounces in with spring</p>
+                <code>&lt;div class="animate-bounceIn"&gt;</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTINUOUS ANIMATIONS -->
+    <div class="demo-section animate-slideInUp">
+        <h2>♾️ Continuous Animations</h2>
+        <p>These animations loop continuously</p>
+        
+        <div class="demo-grid">
+            <div class="demo-box">
+                <div class="animate-float" style="font-size: 2rem;">👁️</div>
+                <strong>Float</strong>
+                <p>Floating up and down</p>
+                <code>&lt;div class="animate-float"&gt;</code>
+            </div>
+            <div class="demo-box">
+                <div class="animate-glow" style="font-size: 1.5rem;">✨</div>
+                <strong>Glow</strong>
+                <p>Glowing text effect</p>
+                <code>&lt;div class="animate-glow"&gt;</code>
+            </div>
+            <div class="demo-box">
+                <div class="animate-pulse" style="font-size: 2rem;">💫</div>
+                <strong>Pulse</strong>
+                <p>Pulsing opacity</p>
+                <code>&lt;div class="animate-pulse"&gt;</code>
+            </div>
+            <div class="demo-box">
+                <div class="animate-bounce" style="font-size: 2rem;">⬆️</div>
+                <strong>Bounce</strong>
+                <p>Bouncing motion</p>
+                <code>&lt;div class="animate-bounce"&gt;</code>
+            </div>
+            <div class="demo-box">
+                <div class="animate-spin" style="font-size: 2rem;">⚙️</div>
+                <strong>Spin</strong>
+                <p>Spinning rotation</p>
+                <code>&lt;div class="animate-spin"&gt;</code>
+            </div>
+            <div class="demo-box">
+                <div style="animation: wave 2s ease-in-out infinite; font-size: 2rem;">👋</div>
+                <strong>Wave</strong>
+                <p>Waving motion</p>
+                <code>&lt;div class="animate-wave"&gt;</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- STAGGERED ANIMATIONS -->
+    <div class="demo-section animate-slideInUp">
+        <h2>⏱️ Staggered Animations</h2>
+        <p>Use delays to stagger multiple animations for visual rhythm</p>
+        
+        <div class="demo-grid">
+            <div class="demo-box animate-slideInUp animate-delay-1">
+                First
+            </div>
+            <div class="demo-box animate-slideInUp animate-delay-2">
+                Second
+            </div>
+            <div class="demo-box animate-slideInUp animate-delay-3">
+                Third
+            </div>
+            <div class="demo-box animate-slideInUp animate-delay-4">
+                Fourth
+            </div>
+            <div class="demo-box animate-slideInUp animate-delay-5">
+                Fifth
+            </div>
+        </div>
+        <code style="margin-top: 20px;">
+&lt;div class="animate-slideInUp animate-delay-1"&gt;First&lt;/div&gt;<br>
+&lt;div class="animate-slideInUp animate-delay-2"&gt;Second&lt;/div&gt;<br>
+&lt;div class="animate-slideInUp animate-delay-3"&gt;Third&lt;/div&gt;
+        </code>
+    </div>
+
+    <!-- HOVER EFFECTS -->
+    <div class="demo-section animate-slideInUp">
+        <h2>🖱️ Hover Effects</h2>
+        <p>These effects activate when you hover over the element</p>
+        
+        <div class="demo-grid">
+            <div class="demo-box hover-lift">
+                <strong>Hover Lift</strong>
+                <p>Lifts up on hover</p>
+                <code>&lt;div class="hover-lift"&gt;</code>
+            </div>
+            <div class="demo-box hover-scale">
+                <strong>Hover Scale</strong>
+                <p>Scales up on hover</p>
+                <code>&lt;div class="hover-scale"&gt;</code>
+            </div>
+            <div class="demo-box hover-glow">
+                <strong>Hover Glow</strong>
+                <p>Glows on hover</p>
+                <code>&lt;div class="hover-glow"&gt;</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESPONSIVE DESIGN EXAMPLE -->
+    <div class="demo-section animate-slideInUp">
+        <h2>📱 Responsive Design</h2>
+        <p>The layout automatically adapts to different screen sizes. Try resizing your browser!</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px;">
+            <div style="background: linear-gradient(135deg, #00d9ff, #0099ff); padding: 20px; border-radius: 10px; text-align: center;">
+                Desktop
+            </div>
+            <div style="background: linear-gradient(135deg, #0099ff, #ff006e); padding: 20px; border-radius: 10px; text-align: center;">
+                Tablet
+            </div>
+            <div style="background: linear-gradient(135deg, #ff006e, #00d9ff); padding: 20px; border-radius: 10px; text-align: center;">
+                Mobile
+            </div>
+        </div>
+
+        <code style="margin-top: 20px;">
+/* Responsive Grid */
+<br>
+.demo-grid {
+    <br>&nbsp;&nbsp;display: grid;<br>&nbsp;&nbsp;grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));<br>&nbsp;&nbsp;gap: 20px;<br>
+}
+<br>
+/* Automatically adjusts columns based on screen size! */
+        </code>
+    </div>
+
+    <!-- USING IN YOUR GAMES -->
+    <div class="demo-section animate-slideInUp">
+        <h2>🎮 How to Use in Your Games</h2>
+        <p>Add these to your game HTML files (like aliengame.html, cargame.html, etc.)</p>
+        
+        <code style="margin-top: 20px;">
+&lt;!DOCTYPE html&gt;<br>
+&lt;html lang="en"&gt;<br>
+&lt;head&gt;<br>
+&nbsp;&nbsp;&lt;meta charset="UTF-8"&gt;<br>
+&nbsp;&nbsp;&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;<br>
+&nbsp;&nbsp;&lt;title&gt;My Game&lt;/title&gt;<br>
+&nbsp;&nbsp;&lt;link rel="stylesheet" href="animations.css"&gt;<br>
+&nbsp;&nbsp;&lt;style&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;:root {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--primary: #00d9ff;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--secondary: #0099ff;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;/* Your game styles here */<br>
+&nbsp;&nbsp;&lt;/style&gt;<br>
+&lt;/head&gt;<br>
+&lt;body&gt;<br>
+&nbsp;&nbsp;&lt;h1 class="animate-glow"&gt;Game Title&lt;/h1&gt;<br>
+&nbsp;&nbsp;&lt;div class="animate-slideInUp"&gt;Your game content&lt;/div&gt;<br>
+&lt;/body&gt;<br>
+&lt;/html&gt;
+        </code>
+    </div>
+
+    <!-- COLOR VARIABLES -->
+    <div class="demo-section animate-slideInUp">
+        <h2>🎨 CSS Variables You Can Use</h2>
+        <p>These variables are defined in animations.css and all CSS files</p>
+        
+        <div style="display: grid; gap: 10px; margin-top: 20px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 40px; height: 40px; background: #00d9ff; border-radius: 5px;"></div>
+                <div>
+                    <strong>--primary: #00d9ff</strong> - Bright Cyan (main color)
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 40px; height: 40px; background: #0099ff; border-radius: 5px;"></div>
+                <div>
+                    <strong>--secondary: #0099ff</strong> - Sky Blue (accent)
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 40px; height: 40px; background: #ff006e; border-radius: 5px;"></div>
+                <div>
+                    <strong>--accent: #ff006e</strong> - Neon Pink (highlight)
+                </div>
+            </div>
+        </div>
+
+        <code style="margin-top: 20px;">
+/* Use variables in your CSS */
+<br>
+.my-element {
+    <br>&nbsp;&nbsp;color: var(--primary);<br>&nbsp;&nbsp;border: 2px solid var(--secondary);<br>&nbsp;&nbsp;background: rgba(var(--accent), 0.1);<br>
+}
+        </code>
+    </div>
+
+    <!-- PERFORMANCE TIPS -->
+    <div class="demo-section animate-slideInUp">
+        <h2>⚡ Performance Tips</h2>
+        <ul style="margin-top: 20px; line-height: 2;">
+            <li>✅ Use animations sparingly (1-2 per section)</li>
+            <li>✅ Animations use GPU acceleration (transform, opacity)</li>
+            <li>✅ Mobile-friendly animations automatically disabled for users who prefer reduced motion</li>
+            <li>✅ All animations optimized for smooth 60fps performance</li>
+            <li>✅ Test on real devices for best results</li>
+        </ul>
+    </div>
+
+    <footer style="text-align: center; margin-top: 60px; padding: 40px 20px; border-top: 2px solid rgba(0, 217, 255, 0.2);">
+        <p style="color: #a0aec0;">
+            For more information, check UI-ENHANCEMENT-GUIDE.md
+        </p>
+        <p style="color: #a0aec0; font-size: 0.9rem;">
+            © 2026 Best Of All - NETWORK. All animations are production-ready!
+        </p>
+    </footer>
+</body>
+</html>

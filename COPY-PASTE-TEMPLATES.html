@@ -1,0 +1,502 @@
+<!-- QUICK COPY-PASTE TEMPLATES FOR YOUR GAME FILES -->
+
+<!-- ================================================
+     TEMPLATE 1: BASIC GAME HTML WITH ANIMATIONS
+     Copy this template for any new game page
+     ================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Name Here</title>
+    <link rel="stylesheet" href="animations.css">
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary: #00d9ff;
+            --secondary: #0099ff;
+            --accent: #ff006e;
+            --bg-dark: #0a0e27;
+            --bg-darker: #050a1a;
+            --text-light: #e0e7ff;
+            --text-muted: #a0aec0;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(0, 217, 255, 0.2);
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-light);
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 153, 255, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+            animation: gradientFlow 8s ease infinite;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.15), rgba(0, 153, 255, 0.15));
+            border: 2px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 20px;
+            animation: slideInDown 0.8s ease-out;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        /* Game Container */
+        .game-container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: slideInUp 0.8s ease-out 0.2s both;
+        }
+
+        /* Game Stats */
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: rgba(0, 217, 255, 0.1);
+            border: 2px solid var(--glass-border);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: var(--primary);
+            transform: translateY(-4px);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: bold;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #000;
+            text-decoration: none;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+            box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            header {
+                padding: 30px 15px;
+                margin-bottom: 20px;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .game-container {
+                padding: 25px 15px;
+                margin: 15px auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 25px 12px;
+            }
+
+            header h1 {
+                font-size: 1.4rem;
+            }
+
+            .game-container {
+                padding: 18px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎮 Game Title</h1>
+        <p class="animate-float">Your game description here</p>
+    </header>
+
+    <main class="game-container">
+        <div class="animate-slideInUp">
+            <!-- Your game iframe or content goes here -->
+            <h2 style="color: var(--primary); animation: glow 3s ease-in-out infinite;">Ready to Play?</h2>
+            <p>Embed your game or instructions here</p>
+            <button class="btn animate-pulse">Start Game</button>
+        </div>
+
+        <!-- Game Stats Example -->
+        <div class="game-stats animate-slideInUp" style="animation-delay: 0.1s;">
+            <div class="stat-box">
+                <div class="stat-label">High Score</div>
+                <div class="stat-value">9,999</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Level</div>
+                <div class="stat-value">10</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Time</div>
+                <div class="stat-value">5:32</div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+
+
+<!-- ================================================
+     TEMPLATE 2: MINIMAL GAME PAGE
+     Use this for quick setup
+     ================================================ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Game</title>
+    <link rel="stylesheet" href="animations.css">
+    <style>
+        :root {
+            --primary: #00d9ff;
+            --secondary: #0099ff;
+            --bg-dark: #0a0e27;
+        }
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark), #050a1a);
+            color: #e0e7ff;
+            min-height: 100vh;
+        }
+        h1 {
+            color: var(--primary);
+            animation: glow 3s ease-in-out infinite;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            animation: slideInUp 0.8s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="animate-glow">🎮 Game Title</h1>
+        <p>Your game content here</p>
+    </div>
+</body>
+</html>
+
+
+<!-- ================================================
+     TEMPLATE 3: GAME CARD GRID
+     For multiple games on one page
+     ================================================ -->
+
+<div class="games-grid">
+    <div class="game-card animate-slideInUp animate-delay-1">
+        <h3>Game 1</h3>
+        <p>Description of game 1</p>
+        <button class="btn">Play</button>
+    </div>
+    <div class="game-card animate-slideInUp animate-delay-2">
+        <h3>Game 2</h3>
+        <p>Description of game 2</p>
+        <button class="btn">Play</button>
+    </div>
+    <div class="game-card animate-slideInUp animate-delay-3">
+        <h3>Game 3</h3>
+        <p>Description of game 3</p>
+        <button class="btn">Play</button>
+    </div>
+</div>
+
+<style>
+    .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .game-card {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(0, 217, 255, 0.2);
+        padding: 20px;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .game-card:hover {
+        transform: translateY(-8px);
+        border-color: #00d9ff;
+        box-shadow: 0 12px 40px rgba(0, 217, 255, 0.3);
+    }
+
+    .game-card h3 {
+        color: #00d9ff;
+        margin-bottom: 10px;
+    }
+</style>
+
+
+<!-- ================================================
+     TEMPLATE 4: SCORE DISPLAY
+     Show game scores with animation
+     ================================================ -->
+
+<div class="score-display animate-bounce">
+    <div class="score-item">
+        <span class="label">Score</span>
+        <span class="value animate-glow">1,250</span>
+    </div>
+    <div class="score-item">
+        <span class="label">Lives</span>
+        <span class="value" style="color: #ff006e;">❤️ 3</span>
+    </div>
+    <div class="score-item">
+        <span class="label">Level</span>
+        <span class="value animate-glow">5</span>
+    </div>
+</div>
+
+<style>
+    .score-display {
+        display: flex;
+        justify-content: space-around;
+        gap: 20px;
+        padding: 20px;
+        background: rgba(0, 217, 255, 0.1);
+        border: 2px solid rgba(0, 217, 255, 0.2);
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+
+    .score-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .label {
+        color: #a0aec0;
+        font-size: 0.9rem;
+    }
+
+    .value {
+        color: #00d9ff;
+        font-size: 1.8rem;
+        font-weight: bold;
+    }
+</style>
+
+
+<!-- ================================================
+     COPY-PASTE SNIPPETS FOR YOUR GAME
+     ================================================ -->
+
+<!-- Glowing Title -->
+<h1 style="color: #00d9ff; animation: glow 3s ease-in-out infinite;">Your Game Title</h1>
+
+<!-- Animated Button -->
+<button style="
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #00d9ff, #0099ff);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    animation: pulse 2s ease-in-out infinite;
+    transition: all 0.3s ease;
+" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+    Click Me!
+</button>
+
+<!-- Floating Element -->
+<div style="animation: float 4s ease-in-out infinite;">
+    ✨ This element floats!
+</div>
+
+<!-- Animated Card -->
+<div style="
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    padding: 20px;
+    border-radius: 15px;
+    animation: slideInUp 0.8s ease-out;
+    transition: all 0.3s ease;
+" onmouseover="this.style.transform='translateY(-8px)'; this.style.borderColor='#00d9ff';" 
+onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(0, 217, 255, 0.2)';">
+    Hover over this card!
+</div>
+
+<!-- Game Container -->
+<div style="
+    max-width: 900px;
+    margin: 20px auto;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 15px;
+    animation: slideInUp 0.8s ease-out;
+">
+    <h2 style="color: #00d9ff;">Your Game Here</h2>
+    <p>Game instructions and content</p>
+</div>
+
+
+<!-- ================================================
+     ALL ANIMATION CLASSES (QUICK REFERENCE)
+     ================================================ -->
+
+<!-- Entrance Animations -->
+<div class="animate-slideInDown">Slides in from top</div>
+<div class="animate-slideInUp">Slides in from bottom</div>
+<div class="animate-slideInLeft">Slides in from left</div>
+<div class="animate-slideInRight">Slides in from right</div>
+<div class="animate-scaleIn">Scales in smoothly</div>
+<div class="animate-bounceIn">Bounces in</div>
+<div class="animate-fadeIn">Fades in</div>
+
+<!-- Continuous Animations -->
+<div class="animate-float">Floats up and down</div>
+<div class="animate-glow">Glows effect</div>
+<div class="animate-pulse">Pulses opacity</div>
+<div class="animate-bounce">Bounces continuously</div>
+<div class="animate-spin">Spins continuously</div>
+
+<!-- Hover Effects -->
+<div class="hover-lift">Lifts on hover</div>
+<div class="hover-scale">Scales on hover</div>
+<div class="hover-glow">Glows on hover</div>
+
+<!-- Staggered Delays -->
+<div class="animate-slideInUp animate-delay-1">First (0.1s delay)</div>
+<div class="animate-slideInUp animate-delay-2">Second (0.2s delay)</div>
+<div class="animate-slideInUp animate-delay-3">Third (0.3s delay)</div>
+<div class="animate-slideInUp animate-delay-4">Fourth (0.4s delay)</div>
+<div class="animate-slideInUp animate-delay-5">Fifth (0.5s delay)</div>
+
+
+<!-- ================================================
+     CSS VARIABLES YOU CAN USE
+     ================================================ -->
+
+<style>
+    :root {
+        --primary: #00d9ff;        /* Bright Cyan */
+        --secondary: #0099ff;      /* Sky Blue */
+        --accent: #ff006e;         /* Neon Pink */
+        --bg-dark: #0a0e27;        /* Dark Background */
+        --bg-darker: #050a1a;      /* Darker Background */
+        --text-light: #e0e7ff;     /* Light Text */
+        --text-muted: #a0aec0;     /* Muted Text */
+        --glass-bg: rgba(255, 255, 255, 0.08);     /* Glass Background */
+        --glass-border: rgba(0, 217, 255, 0.2);    /* Glass Border */
+    }
+
+    /* Usage Examples */
+    .my-heading {
+        color: var(--primary);
+        text-shadow: 0 0 20px var(--primary);
+    }
+
+    .my-button {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border: 2px solid var(--primary);
+    }
+
+    .my-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+    }
+</style>
+
+
+<!-- ================================================
+     Ready to Use! 
+     Just copy the section you need and paste into your game!
+     ================================================ -->
