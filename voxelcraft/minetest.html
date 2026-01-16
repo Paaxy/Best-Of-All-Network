@@ -37,13 +37,15 @@
 </head>
 <body>
   <div id="hotbar">
-    <div class="slot selected"><img src="https://raw.githubusercontent.com/kenneyNL/bit-pack/main/PNG/Tiles/tile_0000.png" width="48" height="48"></div>
-    <div class="slot"><img src="https://raw.githubusercontent.com/kenneyNL/bit-pack/main/PNG/Tiles/tile_0001.png" width="48" height="48"></div>
-    <div class="slot"><img src="https://raw.githubusercontent.com/kenneyNL/bit-pack/main/PNG/Tiles/tile_0002.png" width="48" height="48"></div>
+    <div class="slot selected"><img src="https://cdn.jsdelivr.net/gh/kenneyNL/bit-pack/PNG/Tiles/tile_0000.png" width="48" height="48"></div>
+    <div class="slot"><img src="https://cdn.jsdelivr.net/gh/kenneyNL/bit-pack/PNG/Tiles/tile_0001.png" width="48" height="48"></div>
+    <div class="slot"><img src="https://cdn.jsdelivr.net/gh/kenneyNL/bit-pack/PNG/Tiles/tile_0002.png" width="48" height="48"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/simplex-noise@4.0.1/simplex-noise.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/simplex-noise@4.0.1/simplex-noise.min.js"></script>
+
   <script>
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
@@ -51,18 +53,17 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    const loader = new THREE.TextureLoader();
     const textures = {
-      grass: loader.load('https://raw.githubusercontent.com/kenneyNL/bit-pack/main/PNG/Tiles/tile_0000.png'),
-      dirt: loader.load('https://raw.githubusercontent.com/kenneyNL/bit-pack/main/PNG/Tiles/tile_0001.png'),
-      stone: loader.load('https://raw.githubusercontent.com/kenneyNL/bit-pack/main/PNG/Tiles/tile_0002.png')
-    };
+  grass: loader.load('https://cdn.jsdelivr.net/gh/kenneyNL/bit-pack@main/PNG/Tiles/tile_0000.png'),
+  dirt: loader.load('https://cdn.jsdelivr.net/gh/kenneyNL/bit-pack@main/PNG/Tiles/tile_0001.png'),
+  stone: loader.load('https://cdn.jsdelivr.net/gh/kenneyNL/bit-pack@main/PNG/Tiles/tile_0002.png')
+};
 
     const simplex = new SimplexNoise();
     const boxGeo = new THREE.BoxGeometry(1, 1, 1);
 
     function getBlockMaterial(type) {
-      return new THREE.MeshLambertMaterial({ map: textures[type] });
+      return new THREE.MeshBasicMaterial({ map: textures[type] });
     }
 
     for (let x = -10; x < 10; x++) {
@@ -76,14 +77,6 @@
         }
       }
     }
-
-    // Add lighting so textures show up!
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(10, 20, 10);
-    scene.add(light);
-
-    const ambient = new THREE.AmbientLight(0x404040);
-    scene.add(ambient);
 
     camera.position.set(0, 20, 30);
     camera.lookAt(0, 5, 0);
