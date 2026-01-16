@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Minecraft in HTML</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #000; }
+
+    #hotbar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      animation: fadeIn 1s ease-out;
+      z-index: 10;
+    }
+
+    .slot {
+      width: 48px;
+      height: 48px;
+      border: 2px solid #fff;
+      background: rgba(0,0,0,0.5);
+      transition: transform 0.2s;
+    }
+
+    .slot.selected {
+      transform: scale(1.2);
+      border-color: #0ff;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div id="hotbar">
+    <div class="slot selected"><img src="https://kenney.nl/assets/bit-pack/PNG/Tiles/tile_0000.png" width="48" height="48"></div>
+    <div class="slot"><img src="https://kenney.nl/assets/bit-pack/PNG/Tiles/tile_0001.png" width="48" height="48"></div>
+    <div class="slot"><img src="https://kenney.nl/assets/bit-pack/PNG/Tiles/tile_0002.png" width="48" height="48"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/simplex-noise@4.0.1/simplex-noise.min.js"></script>
+  <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const loader = new THREE.TextureLoader();
+    const textures = {
+      grass: loader.load('https://kenney.nl/assets/bit-pack/PNG/Tiles/tile_0000.png'),
+      dirt: loader.load('https://kenney.nl/assets/bit-pack/PNG/Tiles/tile_0001.png'),
+      stone: loader.load('https://kenney.nl/assets/bit-pack/PNG/Tiles/tile_0002.png')
+    };
+
+    const simplex = new SimplexNoise();
+    const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+
+    function getBlockMaterial(type) {
+      return new THREE.MeshBasicMaterial({ map: textures[type] });
+    }
+
+    for (let x = -10; x < 10; x++) {
+      for (let z = -10; z < 10; z++) {
+        let height = Math.floor(simplex.noise2D(x * 0.1, z * 0.1) * 5 + 5);
+        for (let y = 0; y <= height; y++) {
+          let type = y === height ? 'grass' : y > height - 3 ? 'dirt' : 'stone';
+          const cube = new THREE.Mesh(boxGeo, getBlockMaterial(type));
+          cube.position.set(x, y, z);
+          scene.add(cube);
+        }
+      }
+    }
+
+    camera.position.set(0, 15, 25);
+    camera.lookAt(0, 5, 0);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
