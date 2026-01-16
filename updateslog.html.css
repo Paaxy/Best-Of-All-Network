@@ -127,3 +127,18 @@ footer{margin-top:22px;text-align:center;color:#c9eaf0;padding:12px}
 /* Utility */
 .center{text-align:center}
 .will-animate{will-change:transform,opacity}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+body {
+  background: linear-gradient(135deg, #0a0e27, #1a1f3a);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #e8f6f8;
+  overflow-x: hidden;
+}
