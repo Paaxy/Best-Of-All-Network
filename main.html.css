@@ -260,72 +260,144 @@ footer p {
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     body {
-        padding: 12px;
+        padding: 10px;
+        width: 100%;
+        overflow-x: hidden;
     }
 
     header {
-        padding: 30px 15px;
-        margin-bottom: 20px;
+        padding: 20px 10px;
+        margin-bottom: 15px;
+        border-radius: 15px;
+    }
+
+    .header-content {
+        gap: 12px;
+        flex-direction: column;
+        align-items: center;
     }
 
     header h1 {
-        font-size: 1.8rem;
+        font-size: 1.3rem;
+        text-align: center;
+    }
+
+    .page-info {
+        align-items: center;
+        text-align: center;
+    }
+
+    .page-name {
+        font-size: 0.9rem;
+    }
+
+    #logo {
+        width: 70px !important;
+        height: auto;
     }
 
     nav {
         flex-direction: column;
         align-items: stretch;
-        padding: 10px 15px;
-        margin-bottom: 20px;
+        padding: 10px 10px;
+        margin-bottom: 15px;
+        gap: 8px;
     }
 
     nav ul {
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
     }
 
     nav a {
-        padding: 12px 16px;
+        padding: 10px 12px;
         text-align: center;
         width: 100%;
+        font-size: 0.85rem;
     }
 
     main {
-        padding: 25px 15px;
-        margin: 15px auto;
+        padding: 15px 10px;
+        margin: 10px 0;
+        max-width: 100%;
     }
 
     main h2 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
+    }
+
+    main p {
+        font-size: 0.9rem;
     }
 
     footer {
-        margin-top: 30px;
-        padding: 20px 15px;
+        margin-top: 20px;
+        padding: 15px 10px;
+        margin-left: -10px;
+        margin-right: -10px;
+        border-radius: 0;
     }
 }
 
 @media (max-width: 480px) {
     body {
-        padding: 8px;
+        padding: 5px;
+        width: 100%;
+        overflow-x: hidden;
     }
 
     header {
-        padding: 25px 12px;
-        margin-bottom: 15px;
+        padding: 15px 8px;
+        margin-bottom: 10px;
+        border-radius: 12px;
+    }
+
+    .header-content {
+        gap: 10px;
+        flex-direction: column;
     }
 
     header h1 {
-        font-size: 1.4rem;
+        font-size: 1.1rem;
     }
 
-    main {
-        padding: 20px 12px;
-        margin: 10px auto;
+    .page-name {
+        font-size: 0.8rem;
+    }
+
+    #logo {
+        width: 60px !important;
+        height: auto;
+    }
+
+    nav {
+        padding: 8px 8px;
+        margin-bottom: 10px;
+        gap: 6px;
     }
 
     nav a {
-        padding: 10px 14px;
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+
+    main {
+        padding: 12px 8px;
+        margin: 8px 0;
+    }
+
+    main h2 {
+        font-size: 1.1rem;
+    }
+
+    main p {
         font-size: 0.85rem;
+    }
+
+    footer {
+        margin-top: 15px;
+        padding: 12px 8px;
+        margin-left: -5px;
+        margin-right: -5px;
     }
 }

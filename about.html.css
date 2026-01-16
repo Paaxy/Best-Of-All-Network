@@ -423,85 +423,36 @@ footer p {
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     body {
-        padding: 12px;
+        padding: 10px;
+        width: 100%;
+        overflow-x: hidden;
     }
 
     header {
-        padding: 30px 15px;
-        margin-bottom: 20px;
-    }
-
-    header h1,
-    .header-title {
-        font-size: 1.6rem;
-    }
-
-    nav {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 15px;
-        margin-top: 15px;
-        gap: 10px;
-    }
-
-    nav ul {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    nav a {
-        padding: 10px 16px;
-        text-align: center;
-        width: 100%;
-    }
-
-    .nav-quick {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .nav-btn {
-        width: 100%;
-        text-align: center;
-    }
-
-    main {
-        padding: 25px 15px;
-        margin: 15px auto;
-    }
-
-    section {
-        padding: 15px;
+        padding: 20px 10px;
         margin-bottom: 15px;
+        border-radius: 15px;
     }
 
-    h2 {
-        font-size: 1.3rem;
-    }
-
-    ul {
-        margin-left: 15px;
-    }
-
-    footer {
-        margin-top: 30px;
-        padding: 20px 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    body {
-        padding: 8px;
-    }
-
-    header {
-        padding: 25px 12px;
-        margin-bottom: 15px;
+    .header-content {
+        gap: 12px;
+        flex-direction: column;
+        align-items: center;
     }
 
     header h1,
     .header-title {
         font-size: 1.3rem;
+        text-align: center;
+    }
+
+    .page-info {
+        align-items: center;
+        text-align: center;
+    }
+
+    .page-name {
+        font-size: 0.9rem;
     }
 
     header p {
@@ -509,43 +460,139 @@ footer p {
     }
 
     #logo {
-        width: 80px;
-        margin-top: 12px;
+        width: 70px !important;
+        height: auto;
     }
 
     nav {
-        padding: 12px;
-        margin-top: 12px;
-        gap: 8px;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px 10px;
+        margin-top: 10px;
+        gap: 6px;
     }
 
     nav ul {
+        flex-direction: column;
         gap: 6px;
     }
 
     nav a {
-        padding: 8px 12px;
-        font-size: 0.8rem;
+        padding: 10px 12px;
+        text-align: center;
+        width: 100%;
+        font-size: 0.85rem;
+    }
+
+    .nav-quick {
+        flex-direction: column;
+        gap: 6px;
     }
 
     .nav-btn {
-        padding: 8px 16px;
-        font-size: 0.8rem;
+        width: 100%;
+        text-align: center;
+        padding: 10px 12px;
+        font-size: 0.85rem;
     }
 
     main {
-        padding: 18px 12px;
-        margin: 10px auto;
+        padding: 15px 10px;
+        margin: 15px auto;
     }
 
     section {
         padding: 12px;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
 
     h2 {
         font-size: 1.2rem;
+    }
+
+    ul {
+        margin-left: 15px;
+    }
+
+    footer {
+        margin-top: 20px;
+        padding: 15px 10px;
+        margin-left: -10px;
+        margin-right: -10px;
+        border-radius: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    header {
+        padding: 15px 8px;
         margin-bottom: 10px;
+        border-radius: 12px;
+    }
+
+    .header-content {
+        gap: 8px;
+        flex-direction: column;
+    }
+
+    header h1,
+    .header-title {
+        font-size: 1.1rem;
+    }
+
+    .page-name {
+        font-size: 0.8rem;
+    }
+
+    header p {
+        font-size: 0.8rem;
+    }
+
+    #logo {
+        width: 60px !important;
+        height: auto;
+        margin-top: 0;
+    }
+
+    nav {
+        padding: 8px 8px;
+        margin-top: 8px;
+        gap: 5px;
+    }
+
+    nav ul {
+        gap: 5px;
+    }
+
+    nav a {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+
+    .nav-btn {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+
+    main {
+        padding: 12px 8px;
+        margin: 10px auto;
+    }
+
+    section {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    h2 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
     }
 
     ul {
@@ -554,12 +601,14 @@ footer p {
     }
 
     ul li {
-        font-size: 0.95rem;
-        margin-bottom: 8px;
+        font-size: 0.8rem;
+        margin-bottom: 6px;
     }
 
     footer {
-        margin-top: 25px;
-        padding: 15px 12px;
+        margin-top: 15px;
+        padding: 12px 8px;
+        margin-left: -5px;
+        margin-right: -5px;
     }
 }

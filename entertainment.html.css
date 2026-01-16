@@ -417,116 +417,205 @@ footer {
 /* Responsive Design */
 @media (max-width: 768px) {
     body {
-        padding: 12px;
+        padding: 10px;
+        width: 100%;
+        overflow-x: hidden;
     }
 
     header {
-        padding: 30px 15px;
-        margin-bottom: 20px;
+        padding: 20px 10px;
+        margin-bottom: 15px;
+        border-radius: 15px;
+    }
+
+    .header-content {
+        gap: 12px;
+        flex-direction: column;
+        align-items: center;
     }
 
     header h1 {
-        font-size: 1.8rem;
+        font-size: 1.3rem;
+        text-align: center;
+    }
+
+    .page-info {
+        align-items: center;
+        text-align: center;
+    }
+
+    .page-name {
+        font-size: 0.9rem;
+    }
+
+    .header-subtitle {
+        margin: 10px 0 0 0;
+        font-size: 0.9rem;
+    }
+
+    #logo {
+        width: 70px !important;
+        height: auto;
     }
 
     nav {
-        padding: 15px;
-        margin-bottom: 20px;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px 10px;
+        margin-bottom: 15px;
+        gap: 6px;
     }
 
     .nav-quick {
         flex-direction: column;
-        gap: 10px;
+        gap: 6px;
     }
 
     .nav-btn {
         width: 100%;
+        padding: 10px 12px;
+        font-size: 0.85rem;
     }
 
     .nav-menu {
         flex-direction: column;
-        gap: 10px;
+        gap: 6px;
     }
 
     .nav-menu li a {
         width: 100%;
         text-align: center;
-    }
-
-    .games-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        margin: 20px 0;
-    }
-
-    .games-grid li {
-        padding: 18px;
-    }
-
-    section {
-        margin: 25px 0;
-    }
-
-    section h2 {
-        font-size: 1.6rem;
-    }
-
-    footer {
-        margin-top: 30px;
-        padding: 20px 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    body {
-        padding: 8px;
-    }
-
-    header {
-        padding: 25px 12px;
-        margin-bottom: 15px;
-    }
-
-    header h1 {
-        font-size: 1.4rem;
-    }
-
-    header img#logo {
-        width: 80px;
-    }
-
-    nav {
-        padding: 12px;
-        margin-bottom: 15px;
-        gap: 10px;
-    }
-
-    .nav-quick {
-        gap: 8px;
-    }
-
-    .nav-btn {
-        padding: 10px 16px;
+        padding: 10px 12px;
         font-size: 0.85rem;
     }
 
     .games-grid {
+        grid-template-columns: 1fr;
         gap: 15px;
+        margin: 15px 0;
     }
 
     .games-grid li {
-        padding: 15px;
+        padding: 12px;
     }
 
     .games-grid li h3 {
         font-size: 1.1rem;
     }
 
+    .games-grid li p {
+        font-size: 0.85rem;
+    }
+
     .game-frame {
+        margin: 10px 0;
+    }
+
+    section {
         margin: 15px 0;
     }
 
     section h2 {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
+    }
+
+    section p {
+        font-size: 0.9rem;
+    }
+
+    footer {
+        margin-top: 20px;
+        padding: 15px 10px;
+        margin-left: -10px;
+        margin-right: -10px;
+        border-radius: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    header {
+        padding: 15px 8px;
+        margin-bottom: 10px;
+        border-radius: 12px;
+    }
+
+    .header-content {
+        gap: 8px;
+        flex-direction: column;
+    }
+
+    header h1 {
+        font-size: 1.1rem;
+    }
+
+    .page-name {
+        font-size: 0.8rem;
+    }
+
+    .header-subtitle {
+        margin: 8px 0 0 0;
+        font-size: 0.8rem;
+    }
+
+    #logo {
+        width: 60px !important;
+        height: auto;
+    }
+
+    nav {
+        padding: 8px 8px;
+        margin-bottom: 10px;
+        gap: 5px;
+    }
+
+    .nav-quick {
+        gap: 5px;
+    }
+
+    .nav-btn {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+
+    .nav-menu li a {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+
+    .games-grid {
+        gap: 10px;
+    }
+
+    .games-grid li {
+        padding: 10px;
+    }
+
+    .games-grid li h3 {
+        font-size: 1rem;
+    }
+
+    .games-grid li p {
+        font-size: 0.8rem;
+    }
+
+    section h2 {
+        font-size: 1.1rem;
+    }
+
+    section p {
+        font-size: 0.8rem;
+    }
+
+    footer {
+        margin-top: 15px;
+        padding: 12px 8px;
+        margin-left: -5px;
+        margin-right: -5px;
     }
 }
