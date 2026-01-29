@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tools • Best Of All Network</title>
+<meta name="description" content="Tools page for Best Of All Network with matching theme." />
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --brand: #00c2ff;
+    --accent: #00ffea;
+    --bg0: #0bb7d6;
+    --bg1: #00a6ff;
+    --text-light: #e0f7ff;
+    --text-muted: #a0d8ff;
+    --radius: 16px;
+    --shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    --max-width: 1100px;
+  }
+
+  /* Reset */
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, var(--bg0), var(--bg1));
+    color: var(--text-light);
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* Container */
+  .container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 20px 24px;
+  }
+
+  /* Header */
+  header {
+    background: rgba(255 255 255 / 0.1);
+    backdrop-filter: saturate(180%) blur(10px);
+    padding: 16px 24px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin: 20px auto;
+    max-width: var(--max-width);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  header .logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, var(--accent), var(--brand));
+    box-shadow: 0 0 10px var(--accent);
+    flex-shrink: 0;
+  }
+  header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin: 0;
+    color: var(--text-light);
+  }
+  header nav {
+    margin-left: auto;
+  }
+  header nav a {
+    display: inline-block;
+    padding: 8px 16px;
+    margin-left: 12px;
+    border: 2px solid var(--accent);
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-light);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  header nav a.active,
+  header nav a:hover {
+    background-color: var(--accent);
+    color: #004d4d;
+  }
+
+  /* Main */
+  main {
+    margin: 40px auto;
+    max-width: var(--max-width);
+  }
+
+  main h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    margin-bottom: 24px;
+    color: var(--accent);
+  }
+
+  /* Tools grid */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    gap: 24px;
+  }
+
+  /* Tool card */
+  .tool-card {
+    background: rgba(255 255 255 / 0.1);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+  .tool-card h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .tool-card textarea,
+  .tool-card input[type="text"],
+  .tool-card select {
+    background: rgba(255 255 255 / 0.15);
+    border: none;
+    border-radius: 10px;
+    color: var(--text-light);
+    padding: 10px 12px;
+    font-size: 1rem;
+    font-family: monospace, monospace;
+    resize: vertical;
+    margin-bottom: 12px;
+  }
+  .tool-card textarea::placeholder,
+  .tool-card input::placeholder {
+    color: var(--text-muted);
+  }
+  .tool-card button {
+    background: var(--accent);
+    border: none;
+    border-radius: 9999px;
+    color: #004d4d;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: flex-start;
+  }
+  .tool-card button:hover {
+    background: var(--brand);
+    color: #002a2a;
+  }
+  .tool-card .result {
+    background: rgba(255 255 255 / 0.15);
+    border-radius: 10px;
+    padding: 12px;
+    font-family: monospace, monospace;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    white-space: pre-wrap;
+    min-height: 60px;
+    margin-top: 8px;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    header {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+    header nav a {
+      margin-left: 8px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" aria-hidden="true"></div>
+  <h1>Best Of All - NETWORK</h1>
+  <nav aria-label="Primary navigation">
+    <a href="/" >Home</a>
+    <a href="/about.html">About</a>
+    <a href="/entertainment.html">Entertainment</a>
+    <a href="/updateslog.html">Updates Log</a>
+    <a href="/tools.html" class="active" aria-current="page">Tools</a>
+  </nav>
+</header>
+
+<main class="container" role="main" aria-label="Tools page content">
+  <h2>Tools</h2>
+  <div class="tools-grid" role="list">
+
+    <!-- Example Tool: JSON Formatter -->
+    <section class="tool-card" role="listitem" aria-labelledby="json-title">
+      <h3 id="json-title">JSON Formatter</h3>
+      <textarea id="json-input" rows="6" placeholder='Paste JSON here...'></textarea>
+      <button id="json-format-btn" type="button">Format JSON</button>
+      <button id="json-minify-btn" type="button">Minify JSON</button>
+      <pre class="result" id="json-result" aria-live="polite" aria-atomic="true">Output will appear here.</pre>
+    </section>
+
+    <!-- Example Tool: Base64 Encoder -->
+    <section class="tool-card" role="listitem" aria-labelledby="b64-title">
+      <h3 id="b64-title">Base64 Encoder / Decoder</h3>
+      <textarea id="b64-input" rows="4" placeholder="Enter text to encode or decode"></textarea>
+      <button id="b64-encode-btn" type="button">Encode</button>
+      <button id="b64-decode-btn" type="button">Decode</button>
+      <pre class="result" id="b64-result" aria-live="polite" aria-atomic="true">Output will appear here.</pre>
+    </section>
+
+    <!-- Example Tool: UUID Generator -->
+    <section class="tool-card" role="listitem" aria-labelledby="uuid-title">
+      <h3 id="uuid-title">UUID v4 Generator</h3>
+      <button id="uuid-gen-btn" type="button">Generate UUID</button>
+      <pre class="result" id="uuid-result" aria-live="polite" aria-atomic="true">Click generate to create a UUID.</pre>
+    </section>
+
+  </div>
+</main>
+
+<script>
+  // JSON Formatter
+  const jsonInput = document.getElementById('json-input');
+  const jsonResult = document.getElementById('json-result');
+  document.getElementById('json-format-btn').addEventListener('click', () => {
+    try {
+      const obj = JSON.parse(jsonInput.value);
+      jsonResult.textContent = JSON.stringify(obj, null, 2);
+    } catch(e) {
+      jsonResult.textContent = 'Invalid JSON: ' + e.message;
+    }
+  });
+  document.getElementById('json-minify-btn').addEventListener('click', () => {
+    try {
+      const obj = JSON.parse(jsonInput.value);
+      jsonResult.textContent = JSON.stringify(obj);
+    } catch(e) {
+      jsonResult.textContent = 'Invalid JSON: ' + e.message;
+    }
+  });
+
+  // Base64 Encoder / Decoder
+  const b64Input = document.getElementById('b64-input');
+  const b64Result = document.getElementById('b64-result');
+  document.getElementById('b64-encode-btn').addEventListener('click', () => {
+    try {
+      b64Result.textContent = btoa(unescape(encodeURIComponent(b64Input.value)));
+    } catch(e) {
+      b64Result.textContent = 'Encoding error: ' + e.message;
+    }
+  });
+  document.getElementById('b64-decode-btn').addEventListener('click', () => {
+    try {
+      b64Result.textContent = decodeURIComponent(escape(atob(b64Input.value)));
+    } catch(e) {
+      b64Result.textContent = 'Decoding error: ' + e.message;
+    }
+  });
+
+  // UUID v4 Generator
+  const uuidResult = document.getElementById('uuid-result');
+  document.getElementById('uuid-gen-btn').addEventListener('click', () => {
+    if(window.crypto && crypto.randomUUID) {
+      uuidResult.textContent = crypto.randomUUID();
+    } else {
+      // fallback
+      uuidResult.textContent = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random()*16|0;
+        const v = c === 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1375 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Flappy 3D — Three.js (Login + Fetch Textures)</title>
+  <meta name="description" content="A polished 3D Flappy Birds-style game built with Three.js. Includes a simple login gate and fetch-based texture loading." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600,750&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg0:#07090e;
+      --bg1:#0b1326;
+      --ink:#eaf0ff;
+      --muted:rgba(234,240,255,.72);
+      --glass:rgba(255,255,255,.08);
+      --stroke:rgba(255,255,255,.14);
+      --accent:#62f6d2;
+      --accent2:#ffcf5c;
+      --danger:#ff4d6d;
+
+      --radius:22px;
+      --shadow: 0 24px 70px rgba(0,0,0,.55);
+      --shadow2: 0 12px 34px rgba(0,0,0,.38);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 900px at 20% 18%, rgba(98,246,210,.15), transparent 60%),
+        radial-gradient(1000px 700px at 78% 12%, rgba(255,207,92,.16), transparent 55%),
+        radial-gradient(1300px 900px at 50% 110%, rgba(120,140,255,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow:hidden;
+    }
+
+    /* Subtle noise overlay */
+    body:before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.10;
+      mix-blend-mode:overlay;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+      background-size:220px 220px;
+    }
+
+    a{color:inherit}
+    button, input{font:inherit}
+    .sr-only{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;
+    }
+
+    /* Layout */
+    #app{
+      height:100%;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:18px 22px;
+      position:relative;
+      z-index:30;
+    }
+
+    .brand{
+      display:flex; align-items:baseline; gap:10px;
+    }
+    .brand h1{
+      margin:0;
+      font-family: Fraunces, serif;
+      font-weight:750;
+      font-size: clamp(18px, 2.3vw, 24px);
+      letter-spacing: .2px;
+      line-height:1;
+    }
+    .brand .tag{
+      font-size:12px;
+      color:var(--muted);
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      transform: translateY(-1px);
+      white-space:nowrap;
+    }
+
+    .hudTop{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border:1px solid var(--stroke);
+      border-radius:999px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow2);
+    }
+    .pill strong{
+      font-weight:600;
+      letter-spacing:.02em;
+    }
+    .kbd{
+      font-size:12px;
+      color:rgba(234,240,255,.75);
+      display:flex; align-items:center; gap:6px;
+    }
+    .kbd span{
+      font-size:12px;
+      padding:3px 8px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.22);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    main{
+      position:relative;
+      min-height:0;
+    }
+
+    canvas#c{
+      width:100%;
+      height:100%;
+      display:block;
+      outline:none;
+    }
+
+    /* Bottom bar */
+    footer{
+      position:relative;
+      z-index:20;
+      padding:14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      color:rgba(234,240,255,.78);
+      font-size:13px;
+    }
+    .status{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    }
+    .dot{
+      width:9px; height:9px; border-radius:50%;
+      background:rgba(255,255,255,.28);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.07);
+    }
+    .dot.ok{
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(98,246,210,.10), 0 0 18px rgba(98,246,210,.35);
+    }
+    .dot.bad{
+      background: var(--danger);
+      box-shadow: 0 0 0 4px rgba(255,77,109,.10), 0 0 18px rgba(255,77,109,.32);
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.16);
+      background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
+      color:var(--ink);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      display:inline-flex; align-items:center; gap:10px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow2);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      user-select:none;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.28);
+      background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.10));
+    }
+    .btn:active{ transform: translateY(0px) scale(.99); }
+    .btn.primary{
+      border-color: rgba(98,246,210,.35);
+      background:linear-gradient(180deg, rgba(98,246,210,.22), rgba(98,246,210,.10));
+    }
+    .btn.primary:hover{
+      border-color: rgba(98,246,210,.55);
+      box-shadow: 0 12px 34px rgba(0,0,0,.38), 0 0 0 6px rgba(98,246,210,.08);
+    }
+
+    /* Overlays */
+    .overlay{
+      position:absolute; inset:0;
+      display:grid;
+      place-items:center;
+      padding:22px;
+      z-index:40;
+      background:
+        radial-gradient(900px 500px at 20% 20%, rgba(98,246,210,.12), transparent 60%),
+        radial-gradient(900px 500px at 80% 10%, rgba(255,207,92,.12), transparent 60%),
+        rgba(5,7,12,.54);
+      backdrop-filter: blur(10px);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .25s ease;
+    }
+    .overlay.show{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .panel{
+      width:min(820px, 100%);
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .panelHeader{
+      padding:18px 18px 0 18px;
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-start;
+    }
+    .panelHeader h2{
+      margin:0;
+      font-family: Fraunces, serif;
+      font-weight:750;
+      font-size: clamp(22px, 3.2vw, 34px);
+      letter-spacing: .2px;
+    }
+    .panelHeader p{
+      margin:10px 0 0 0;
+      color:var(--muted);
+      line-height:1.55;
+      max-width: 54ch;
+      font-size: 14px;
+    }
+
+    .panelBody{
+      padding:18px;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:16px;
+    }
+    @media (max-width: 860px){
+      .panelBody{ grid-template-columns:1fr; }
+    }
+
+    .loginBox{
+      padding:16px;
+      border-radius: calc(var(--radius) - 6px);
+      border:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.08));
+    }
+
+    .field{
+      display:grid;
+      gap:8px;
+      margin: 12px 0;
+    }
+    .field label{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color: rgba(234,240,255,.72);
+    }
+    .field input{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      color:var(--ink);
+      outline:none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+    .field input:focus{
+      border-color: rgba(98,246,210,.48);
+      box-shadow: 0 0 0 6px rgba(98,246,210,.10);
+    }
+
+    .help{
+      color: rgba(234,240,255,.70);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .miniGrid{
+      display:grid;
+      gap:12px;
+      align-content:start;
+    }
+    .chip{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:12px 12px;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+    .chip b{
+      font-weight:650;
+      letter-spacing:.02em;
+    }
+    .chip p{
+      margin:4px 0 0 0;
+      color: rgba(234,240,255,.70);
+      font-size: 13px;
+      line-height:1.45;
+    }
+    .badge{
+      flex:0 0 auto;
+      width:32px; height:32px;
+      border-radius: 12px;
+      display:grid; place-items:center;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
+    }
+
+    .panelFooter{
+      padding:16px 18px 18px 18px;
+      display:flex;
+      gap:10px;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      border-top: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.02));
+    }
+
+    /* Game overlay (start / game over) */
+    .centerToast{
+      position:absolute;
+      left:50%; top:50%;
+      transform: translate(-50%,-50%);
+      z-index:25;
+      width:min(560px, calc(100% - 44px));
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding:18px;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .25s ease, transform .25s ease;
+    }
+    .centerToast.show{
+      opacity:1;
+      pointer-events:auto;
+      transform: translate(-50%,-50%) scale(1);
+    }
+    .centerToast h3{
+      margin:0;
+      font-family: Fraunces, serif;
+      font-size: clamp(18px, 2.8vw, 26px);
+      letter-spacing:.2px;
+    }
+    .centerToast p{
+      margin:10px 0 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    .centerToast .row{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .statLine{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      color: rgba(234,240,255,.78);
+      font-size: 13px;
+    }
+    .statLine span{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+
+    /* Reveal */
+    .reveal{
+      opacity:0;
+      transform: translateY(10px);
+    }
+    .reveal.on{
+      animation: reveal .55s ease forwards;
+    }
+    @keyframes reveal{
+      to{opacity:1; transform: translateY(0)}
+    }
+
+    /* Mobile safe areas */
+    @supports(padding:max(0px)){
+      header{ padding-top: max(18px, env(safe-area-inset-top)); }
+      footer{ padding-bottom: max(14px, env(safe-area-inset-bottom)); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="brand reveal" style="animation-delay:.05s">
+        <h1>Flappy 3D</h1>
+        <div class="tag">three.js • fetch textures</div>
+      </div>
+
+      <div class="hudTop">
+        <div class="pill reveal" style="animation-delay:.12s" aria-label="Controls">
+          <div class="kbd"><span>Space</span> / <span>Tap</span> flap</div>
+          <div class="kbd"><span>P</span> pause</div>
+        </div>
+        <button id="btnLogout" class="btn reveal" style="animation-delay:.20s" type="button" title="Log out" hidden>
+          <span aria-hidden="true">⟲</span>
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <canvas id="c" tabindex="0" aria-label="3D game canvas"></canvas>
+
+      <div id="toast" class="centerToast" role="dialog" aria-modal="false" aria-live="polite">
+        <h3 id="toastTitle">Ready?</h3>
+        <p id="toastDesc">Press <b>Space</b> (or tap) to flap. Avoid the gates. Keep your altitude.</p>
+        <div class="row">
+          <div class="statLine">
+            <span>Score: <b id="scoreText">0</b></span>
+            <span>Best: <b id="bestText">0</b></span>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button id="btnStart" class="btn primary" type="button">Start</button>
+            <button id="btnRetry" class="btn" type="button" hidden>Retry</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login overlay -->
+      <section id="loginOverlay" class="overlay show" aria-label="Login overlay">
+        <div class="panel">
+          <div class="panelHeader">
+            <div>
+              <h2 class="reveal" style="animation-delay:.05s">Enter the skyway</h2>
+              <p class="reveal" style="animation-delay:.10s">
+                This is a single-file demo with a lightweight “login gate”. We store a token in <code>localStorage</code>.
+                Textures are loaded via <code>fetch()</code> (data-URIs by default; you can swap in real URLs).
+              </p>
+            </div>
+            <div class="pill reveal" style="animation-delay:.14s">
+              <strong id="netLabel">Textures:</strong>
+              <span id="netState" style="color:var(--muted)">loading…</span>
+            </div>
+          </div>
+
+          <div class="panelBody">
+            <div class="loginBox">
+              <form id="loginForm">
+                <div class="field">
+                  <label for="username">Username</label>
+                  <input id="username" name="username" autocomplete="username" placeholder="e.g. sky_pilot" required />
+                </div>
+                <div class="field">
+                  <label for="password">Password</label>
+                  <input id="password" name="password" type="password" autocomplete="current-password" placeholder="any value (demo)" required />
+                </div>
+
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:14px;">
+                  <button class="btn primary" type="submit">Login & Load</button>
+                  <button id="btnGuest" class="btn" type="button">Continue as guest</button>
+                </div>
+
+                <p class="help" style="margin:14px 0 0 0">
+                  Tip: If you want “real sources”, set <code>TEXTURE_SOURCES</code> in the script to
+                  your own hosted images (same-origin) or a CORS-enabled CDN URL.
+                </p>
+              </form>
+            </div>
+
+            <div class="miniGrid">
+              <div class="chip">
+                <div class="badge" aria-hidden="true">1</div>
+                <div>
+                  <b>Fetch-based textures</b>
+                  <p>We fetch image bytes → create a blob URL → feed it to Three.js TextureLoader.</p>
+                </div>
+              </div>
+              <div class="chip">
+                <div class="badge" aria-hidden="true">2</div>
+                <div>
+                  <b>Production-ish structure</b>
+                  <p>Game loop, collision, pause, resize, and scroll-safe UI overlays.</p>
+                </div>
+              </div>
+              <div class="chip">
+                <div class="badge" aria-hidden="true">3</div>
+                <div>
+                  <b>Accessible controls</b>
+                  <p>Keyboard + pointer. Canvas is focusable. UI has semantic regions.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panelFooter">
+            <div class="status">
+              <span id="authDot" class="dot" aria-hidden="true"></span>
+              <span id="authText">Not logged in</span>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button id="btnClear" class="btn" type="button" title="Clear local session">Clear session</button>
+              <button id="btnEnter" class="btn primary" type="button">Enter game</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="status">
+        <span id="texDot" class="dot" aria-hidden="true"></span>
+        <span id="texText">Textures pending…</span>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <button id="btnPause" class="btn" type="button">Pause</button>
+        <button id="btnReset" class="btn" type="button">Reset</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Three.js -->
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+    // ----------------------------
+    // Utilities: reveal animations
+    // ----------------------------
+    const revealEls = [...document.querySelectorAll('.reveal')];
+    requestAnimationFrame(() => {
+      revealEls.forEach((el, i) => {
+        el.classList.add('on');
+        el.style.animationDelay = el.style.animationDelay || `${i * 0.06}s`;
+      });
+    });
+
+    // ----------------------------
+    // "Login" gate (demo)
+    // ----------------------------
+    const LS_KEY = 'flappy3d_token_v1';
+    const BEST_KEY = 'flappy3d_best_v1';
+
+    const loginOverlay = document.getElementById('loginOverlay');
+    const loginForm = document.getElementById('loginForm');
+    const btnGuest = document.getElementById('btnGuest');
+    const btnEnter = document.getElementById('btnEnter');
+    const btnClear = document.getElementById('btnClear');
+    const btnLogout = document.getElementById('btnLogout');
+
+    const authDot = document.getElementById('authDot');
+    const authText = document.getElementById('authText');
+
+    function setAuthUI(isAuthed){
+      authDot.className = 'dot ' + (isAuthed ? 'ok' : '');
+      authText.textContent = isAuthed ? 'Logged in (local token)' : 'Not logged in';
+      btnLogout.hidden = !isAuthed;
+    }
+
+    function setToken(token){
+      if(token) localStorage.setItem(LS_KEY, token);
+      else localStorage.removeItem(LS_KEY);
+      setAuthUI(!!localStorage.getItem(LS_KEY));
+    }
+
+    btnClear.addEventListener('click', () => {
+      setToken(null);
+      localStorage.removeItem(BEST_KEY);
+      syncBest();
+    });
+
+    btnLogout.addEventListener('click', () => {
+      setToken(null);
+      loginOverlay.classList.add('show');
+      pauseGame(true);
+      showToast('Paused', 'Logged out. Login again or continue as guest.');
+    });
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const u = (document.getElementById('username').value || '').trim();
+      const p = (document.getElementById('password').value || '').trim();
+      // Demo authentication: accept any non-empty user+pass
+      if(u && p){
+        setToken('demo_' + btoa(u + ':' + Date.now()));
+        authText.textContent = `Logged in as “${u}”`;
+      }
+    });
+
+    btnGuest.addEventListener('click', () => {
+      // guest token (still a token, but different label)
+      setToken('guest_' + Date.now());
+      authText.textContent = 'Guest session';
+    });
+
+    btnEnter.addEventListener('click', async () => {
+      // Allow entering even without token, but encourage login
+      loginOverlay.classList.remove('show');
+      canvas.focus();
+      // Start in ready state
+      if(!texturesReady){
+        showToast('Loading textures…', 'Please wait a moment.');
+      } else {
+        showToast('Ready?', 'Press Space (or tap) to flap. Avoid the gates. Keep your altitude.');
+      }
+    });
+
+    // ----------------------------
+    // Texture loading via fetch()
+    // ----------------------------
+    const netLabel = document.getElementById('netLabel');
+    const netState = document.getElementById('netState');
+    const texDot = document.getElementById('texDot');
+    const texText = document.getElementById('texText');
+
+    let texturesReady = false;
+
+    // IMPORTANT:
+    // User asked "textures from some sources using fetching".
+    // External image URLs often break + may fail CORS. So default uses DATA URIs fetched via fetch().
+    // Replace these with your own hosted URLs (same-origin) for "real sources".
+    const TEXTURE_SOURCES = {
+      sky: makeSVGDataURI(skySVG()),
+      ground: makeSVGDataURI(groundSVG()),
+      pipe: makeSVGDataURI(pipeSVG()),
+      bird: makeSVGDataURI(birdSVG())
+    };
+
+    function makeSVGDataURI(svg){
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    }
+
+    async function fetchAsTexture(url){
+      const res = await fetch(url, { cache: 'force-cache' });
+      if(!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      return await new Promise((resolve, reject) => {
+        const loader = new THREE.TextureLoader();
+        loader.load(blobUrl, (tex) => {
+          URL.revokeObjectURL(blobUrl);
+          tex.colorSpace = THREE.SRGBColorSpace;
+          tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy?.() ?? 8);
+          resolve(tex);
+        }, undefined, (err) => {
+          URL.revokeObjectURL(blobUrl);
+          reject(err);
+        });
+      });
+    }
+
+    function setTexUI(ok, msg){
+      texDot.className = 'dot ' + (ok ? 'ok' : 'bad');
+      texText.textContent = msg;
+      netState.textContent = ok ? 'ready' : 'failed';
+      netState.style.color = ok ? 'var(--accent)' : 'var(--danger)';
+    }
+
+    // ----------------------------
+    // Three.js scene
+    // ----------------------------
+    const canvas = document.getElementById('c');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(new THREE.Color('#0b1326'), 10, 85);
+
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 200);
+    camera.position.set(-8.0, 2.5, 11.5);
+    camera.lookAt(7, 1.6, 0);
+
+    // Lights
+    const hemi = new THREE.HemisphereLight(0xbfd7ff, 0x1a2446, 0.95);
+    scene.add(hemi);
+
+    const key = new THREE.DirectionalLight(0xffffff, 1.35);
+    key.position.set(-10, 12, 10);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.camera.near = 0.5;
+    key.shadow.camera.far = 80;
+    key.shadow.camera.left = -24;
+    key.shadow.camera.right = 24;
+    key.shadow.camera.top = 24;
+    key.shadow.camera.bottom = -24;
+    scene.add(key);
+
+    const rim = new THREE.DirectionalLight(0x62f6d2, 0.35);
+    rim.position.set(10, 6, -10);
+    scene.add(rim);
+
+    // Materials (filled after textures load)
+    let matSky, matGround, matPipe, matBird;
+
+    // Background "sky dome"
+    const skyGeo = new THREE.SphereGeometry(90, 48, 32);
+    const skyMesh = new THREE.Mesh(skyGeo, new THREE.MeshBasicMaterial({ color: 0x0b1326, side: THREE.BackSide }));
+    scene.add(skyMesh);
+
+    // Ground
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(260, 48, 1, 1),
+      new THREE.MeshStandardMaterial({ color: 0x1c2b20, roughness: 1, metalness: 0 })
+    );
+    ground.rotation.x = -Math.PI/2;
+    ground.position.y = -5.2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Decorative horizon band
+    const horizon = new THREE.Mesh(
+      new THREE.CylinderGeometry(60, 60, 12, 64, 1, true),
+      new THREE.MeshStandardMaterial({
+        color: 0x0f2a2a,
+        roughness: 1,
+        metalness: 0,
+        transparent:true,
+        opacity: 0.35,
+        side: THREE.DoubleSide
+      })
+    );
+    horizon.position.y = -2.6;
+    horizon.rotation.y = Math.PI * 0.20;
+    scene.add(horizon);
+
+    // Bird
+    const bird = new THREE.Group();
+    scene.add(bird);
+
+    const birdBody = new THREE.Mesh(
+      new THREE.SphereGeometry(0.65, 24, 18),
+      new THREE.MeshStandardMaterial({ color: 0xffcf5c, roughness: 0.55, metalness: 0.05 })
+    );
+    birdBody.castShadow = true;
+    birdBody.receiveShadow = false;
+
+    const birdBeak = new THREE.Mesh(
+      new THREE.ConeGeometry(0.22, 0.55, 18),
+      new THREE.MeshStandardMaterial({ color: 0xff8a3d, roughness: 0.6, metalness: 0.05 })
+    );
+    birdBeak.rotation.z = -Math.PI/2;
+    birdBeak.position.set(0.72, -0.05, 0);
+
+    const birdWing = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.12, 0.55, 6, 14),
+      new THREE.MeshStandardMaterial({ color: 0x0b1326, roughness: 0.8, metalness: 0.0 })
+    );
+    birdWing.rotation.z = Math.PI/2;
+    birdWing.position.set(-0.05, -0.05, 0.55);
+
+    bird.add(birdBody, birdBeak, birdWing);
+    bird.position.set(0, 0.5, 0);
+
+    // Pipes (gates)
+    const pipes = [];
+    const PIPE_COUNT = 6;
+    const pipeSpacing = 9.5;
+    const pipeStartX = 18;
+
+    const pipeGeo = new THREE.CylinderGeometry(1.05, 1.05, 14, 22, 1, true);
+    const capGeo = new THREE.CylinderGeometry(1.35, 1.35, 0.6, 22);
+
+    function makePipePair(x){
+      const group = new THREE.Group();
+
+      const top = new THREE.Mesh(pipeGeo, new THREE.MeshStandardMaterial({ color: 0x3fe7c1, roughness: 0.65, metalness: 0.06 }));
+      const bot = new THREE.Mesh(pipeGeo, top.material);
+
+      const topCap = new THREE.Mesh(capGeo, top.material);
+      const botCap = new THREE.Mesh(capGeo, top.material);
+
+      [top, bot, topCap, botCap].forEach(m => { m.castShadow = true; m.receiveShadow = true; });
+
+      // Random gap center
+      const gapCenter = THREE.MathUtils.randFloat(-0.8, 2.6);
+      const gap = 3.2;
+
+      top.position.set(0, gapCenter + (gap/2) + 7.0, 0);
+      bot.position.set(0, gapCenter - (gap/2) - 7.0, 0);
+
+      topCap.position.set(0, top.position.y - 7.0, 0);
+      botCap.position.set(0, bot.position.y + 7.0, 0);
+
+      group.add(top, bot, topCap, botCap);
+      group.position.set(x, 0, 0);
+
+      group.userData = { gapCenter, gap, passed:false };
+      return group;
+    }
+
+    for(let i=0;i<PIPE_COUNT;i++){
+      const p = makePipePair(pipeStartX + i*pipeSpacing);
+      pipes.push(p);
+      scene.add(p);
+    }
+
+    // Floating "air lanes" lines
+    const lane = new THREE.Mesh(
+      new THREE.PlaneGeometry(220, 18, 1, 1),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity:0.06 })
+    );
+    lane.position.set(40, 1.2, -5);
+    lane.rotation.y = Math.PI/2.9;
+    scene.add(lane);
+
+    // ----------------------------
+    // Game state
+    // ----------------------------
+    const toast = document.getElementById('toast');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastDesc = document.getElementById('toastDesc');
+    const btnStart = document.getElementById('btnStart');
+    const btnRetry = document.getElementById('btnRetry');
+    const scoreText = document.getElementById('scoreText');
+    const bestText = document.getElementById('bestText');
+
+    const btnPause = document.getElementById('btnPause');
+    const btnReset = document.getElementById('btnReset');
+
+    let running = false;
+    let paused = false;
+    let gameOver = false;
+
+    let score = 0;
+    let best = Number(localStorage.getItem(BEST_KEY) || 0);
+    bestText.textContent = String(best);
+
+    // Bird physics
+    let vy = 0;
+    const GRAVITY = -18.5;
+    const FLAP = 6.5;
+
+    // Difficulty
+    let speed = 8.2; // forward motion of pipes
+    const speedRamp = 0.032;
+
+    function syncBest(){
+      best = Number(localStorage.getItem(BEST_KEY) || 0);
+      bestText.textContent = String(best);
+    }
+
+    function showToast(title, desc){
+      toastTitle.textContent = title;
+      toastDesc.innerHTML = desc;
+      toast.classList.add('show');
+    }
+    function hideToast(){
+      toast.classList.remove('show');
+    }
+
+    function resetGame(){
+      score = 0;
+      scoreText.textContent = '0';
+      vy = 0;
+      speed = 8.2;
+      bird.position.set(0, 0.5, 0);
+      bird.rotation.set(0, 0, 0);
+
+      // reset pipes
+      pipes.forEach((p, i) => {
+        const x = pipeStartX + i*pipeSpacing;
+        p.position.x = x;
+        p.userData.passed = false;
+
+        const gapCenter = THREE.MathUtils.randFloat(-0.8, 2.6);
+        p.userData.gapCenter = gapCenter;
+
+        const gap = p.userData.gap;
+        const top = p.children[0], bot = p.children[1], topCap = p.children[2], botCap = p.children[3];
+
+        top.position.y = gapCenter + (gap/2) + 7.0;
+        bot.position.y = gapCenter - (gap/2) - 7.0;
+        topCap.position.y = top.position.y - 7.0;
+        botCap.position.y = bot.position.y + 7.0;
+      });
+
+      gameOver = false;
+      paused = false;
+      running = false;
+      btnRetry.hidden = true;
+      btnStart.hidden = false;
+
+      showToast('Ready?', 'Press <b>Space</b> (or tap) to flap. Avoid the gates. Keep your altitude.');
+    }
+
+    function startGame(){
+      if(!texturesReady){
+        showToast('Loading textures…', 'Please wait a moment.');
+        return;
+      }
+      hideToast();
+      running = true;
+      paused = false;
+      gameOver = false;
+      canvas.focus();
+    }
+
+    function endGame(){
+      gameOver = true;
+      running = false;
+      paused = false;
+      btnRetry.hidden = false;
+      btnStart.hidden = true;
+
+      if(score > best){
+        best = score;
+        localStorage.setItem(BEST_KEY, String(best));
+        bestText.textContent = String(best);
+      }
+      showToast('Crashed', 'Press <b>Retry</b> or hit <b>Space</b> to go again.');
+    }
+
+    function pauseGame(force=false){
+      if(gameOver) return;
+      paused = force ? true : !paused;
+      if(paused){
+        running = false;
+        showToast('Paused', 'Press <b>P</b> to resume. You can also tap the canvas to continue.');
+      } else {
+        hideToast();
+        running = true;
+      }
+      btnPause.textContent = paused ? 'Resume' : 'Pause';
+    }
+
+    function flap(){
+      if(loginOverlay.classList.contains('show')) return;
+      if(gameOver){
+        resetGame();
+        startGame();
+        return;
+      }
+      if(!running && !paused){
+        startGame();
+      }
+      if(paused){
+        pauseGame(false);
+        return;
+      }
+      vy = FLAP;
+      // wing flick
+      birdWing.rotation.y = -0.6;
+      setTimeout(() => birdWing.rotation.y = 0, 90);
+    }
+
+    btnStart.addEventListener('click', startGame);
+    btnRetry.addEventListener('click', () => { resetGame(); startGame(); });
+    btnPause.addEventListener('click', () => pauseGame(false));
+    btnReset.addEventListener('click', () => { resetGame(); });
+
+    // Controls
+    window.addEventListener('keydown', (e) => {
+      if(e.code === 'Space'){
+        e.preventDefault();
+        flap();
+      }
+      if(e.key.toLowerCase() === 'p') pauseGame(false);
+      if(e.key.toLowerCase() === 'r') resetGame();
+    }, { passive:false });
+
+    // Pointer / touch
+    window.addEventListener('pointerdown', (e) => {
+      // If clicking on UI buttons, ignore
+      const t = e.target;
+      if(t instanceof HTMLElement && (t.closest('button') || t.closest('input') || t.closest('form'))) return;
+      flap();
+    });
+
+    // Resize
+    function resize(){
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', resize);
+
+    // ----------------------------
+    // Collision & scoring
+    // ----------------------------
+    function intersectsAABB(a, b){
+      return (
+        a.min.x <= b.max.x && a.max.x >= b.min.x &&
+        a.min.y <= b.max.y && a.max.y >= b.min.y &&
+        a.min.z <= b.max.z && a.max.z >= b.min.z
+      );
+    }
+
+    const tmpBox = new THREE.Box3();
+    const tmpBox2 = new THREE.Box3();
+
+    function birdBox(){
+      // approximate bird bounds
+      tmpBox.setFromCenterAndSize(
+        bird.position.clone(),
+        new THREE.Vector3(1.3, 1.0, 1.3)
+      );
+      return tmpBox;
+    }
+
+    function pipeBoxes(pipeGroup){
+      // top and bottom cylinders + caps are already large; compute group children boxes
+      const boxes = [];
+      for(const child of pipeGroup.children){
+        tmpBox2.setFromObject(child);
+        boxes.push(tmpBox2.clone());
+      }
+      return boxes;
+    }
+
+    // ----------------------------
+    // Texture apply
+    // ----------------------------
+    async function loadTextures(){
+      try{
+        netLabel.textContent = 'Textures:';
+        netState.textContent = 'fetching…';
+        texDot.className = 'dot';
+        texText.textContent = 'Fetching textures…';
+
+        const [tSky, tGround, tPipe, tBird] = await Promise.all([
+          fetchAsTexture(TEXTURE_SOURCES.sky),
+          fetchAsTexture(TEXTURE_SOURCES.ground),
+          fetchAsTexture(TEXTURE_SOURCES.pipe),
+          fetchAsTexture(TEXTURE_SOURCES.bird),
+        ]);
+
+        // Configure repeats
+        tGround.wrapS = tGround.wrapT = THREE.RepeatWrapping;
+        tGround.repeat.set(14, 2);
+        tPipe.wrapS = tPipe.wrapT = THREE.RepeatWrapping;
+        tPipe.repeat.set(1, 2);
+
+        // Materials
+        matSky = new THREE.MeshBasicMaterial({ map: tSky, side: THREE.BackSide });
+        matGround = new THREE.MeshStandardMaterial({ map: tGround, roughness: 1.0, metalness: 0.0 });
+        matPipe = new THREE.MeshStandardMaterial({ map: tPipe, roughness: 0.55, metalness: 0.06 });
+        matBird = new THREE.MeshStandardMaterial({ map: tBird, roughness: 0.55, metalness: 0.05 });
+
+        skyMesh.material = matSky;
+        ground.material = matGround;
+
+        // Apply pipe material to all pipe pieces
+        pipes.forEach(g => g.children.forEach(m => m.material = matPipe));
+
+        // Apply bird texture to body
+        birdBody.material = matBird;
+
+        texturesReady = true;
+        setTexUI(true, 'Textures ready (fetched)');
+        if(!loginOverlay.classList.contains('show')){
+          showToast('Ready?', 'Press <b>Space</b> (or tap) to flap. Avoid the gates. Keep your altitude.');
+        }
+      } catch(err){
+        console.error(err);
+        texturesReady = false;
+        setTexUI(false, 'Texture fetch failed (check CORS / URLs)');
+      }
+    }
+
+    // ----------------------------
+    // Animation loop
+    // ----------------------------
+    let last = performance.now();
+
+    function tick(now){
+      const dt = Math.min(0.033, (now - last) / 1000);
+      last = now;
+
+      // Ambient motion even when paused
+      horizon.rotation.y += dt * 0.06;
+      lane.position.x -= dt * 0.8;
+      if(lane.position.x < -20) lane.position.x = 40;
+
+      if(running && !paused && !gameOver){
+        // physics
+        vy += GRAVITY * dt;
+        bird.position.y += vy * dt;
+
+        // tilt with velocity
+        bird.rotation.z = THREE.MathUtils.lerp(bird.rotation.z, THREE.MathUtils.clamp(-vy * 0.06, -0.65, 0.45), 0.14);
+
+        // move pipes left (world forward)
+        const dx = speed * dt;
+        speed += speedRamp * dt;
+
+        for(const p of pipes){
+          p.position.x -= dx;
+
+          // scoring when passing
+          if(!p.userData.passed && p.position.x < bird.position.x){
+            p.userData.passed = true;
+            score += 1;
+            scoreText.textContent = String(score);
+          }
+
+          // recycle
+          if(p.position.x < -18){
+            const maxX = Math.max(...pipes.map(pp => pp.position.x));
+            p.position.x = maxX + pipeSpacing;
+
+            const gapCenter = THREE.MathUtils.randFloat(-1.3, 3.0);
+            p.userData.gapCenter = gapCenter;
+            p.userData.passed = false;
+
+            const gap = p.userData.gap;
+            const top = p.children[0], bot = p.children[1], topCap = p.children[2], botCap = p.children[3];
+            top.position.y = gapCenter + (gap/2) + 7.0;
+            bot.position.y = gapCenter - (gap/2) - 7.0;
+            topCap.position.y = top.position.y - 7.0;
+            botCap.position.y = bot.position.y + 7.0;
+          }
+        }
+
+        // collisions: ground/ceiling
+        if(bird.position.y < -4.3 || bird.position.y > 7.8){
+          endGame();
+        } else {
+          // collisions with pipes (AABB approx)
+          const b = birdBox().clone();
+          for(const p of pipes){
+            // quick X cull
+            if(Math.abs(p.position.x - bird.position.x) > 2.2) continue;
+
+            const boxes = pipeBoxes(p);
+            for(const bx of boxes){
+              if(intersectsAABB(b, bx)){
+                endGame();
+                break;
+              }
+            }
+            if(gameOver) break;
+          }
+        }
+
+        // camera follow
+        camera.position.y = THREE.MathUtils.lerp(camera.position.y, bird.position.y + 2.0, 0.06);
+        camera.lookAt(7, bird.position.y + 1.2, 0);
+      }
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    }
+
+    // ----------------------------
+    // Init
+    // ----------------------------
+    function init(){
+      resize();
+      setAuthUI(!!localStorage.getItem(LS_KEY));
+      authDot.classList.toggle('ok', !!localStorage.getItem(LS_KEY));
+
+      resetGame();
+      // keep toast hidden behind login overlay
+      toast.classList.remove('show');
+
+      loadTextures();
+
+      requestAnimationFrame((t) => {
+        last = t;
+        requestAnimationFrame(tick);
+      });
+
+      // If already authed, allow skipping overlay quickly
+      if(localStorage.getItem(LS_KEY)){
+        authText.textContent = 'Logged in (saved session)';
+      }
+    }
+
+    init();
+
+    // ----------------------------
+    // SVG texture generators (hand-crafted)
+    // ----------------------------
+    function skySVG(){
+      return `
+      <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#081028"/>
+            <stop offset="0.55" stop-color="#0b1b34"/>
+            <stop offset="1" stop-color="#091223"/>
+          </linearGradient>
+          <radialGradient id="h" cx="20%" cy="20%" r="70%">
+            <stop offset="0" stop-color="#62f6d2" stop-opacity=".16"/>
+            <stop offset="1" stop-color="#62f6d2" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="s" cx="78%" cy="18%" r="60%">
+            <stop offset="0" stop-color="#ffcf5c" stop-opacity=".14"/>
+            <stop offset="1" stop-color="#ffcf5c" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="n">
+            <feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="3" stitchTiles="stitch"/>
+            <feColorMatrix type="matrix" values="
+              1 0 0 0 0
+              0 1 0 0 0
+              0 0 1 0 0
+              0 0 0 .18 0"/>
+          </filter>
+        </defs>
+        <rect width="1024" height="1024" fill="url(#g)"/>
+        <rect width="1024" height="1024" fill="url(#h)"/>
+        <rect width="1024" height="1024" fill="url(#s)"/>
+        <rect width="1024" height="1024" filter="url(#n)" opacity=".45"/>
+        <g opacity=".9">
+          ${stars(140)}
+        </g>
+      </svg>`;
+    }
+
+    function stars(n){
+      let out = '';
+      for(let i=0;i<n;i++){
+        const x = Math.random()*1024;
+        const y = Math.random()*650;
+        const r = Math.random()*1.8 + 0.3;
+        const o = Math.random()*0.55 + 0.15;
+        out += `<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="${r.toFixed(2)}" fill="#eaf0ff" opacity="${o.toFixed(2)}"/>`;
+      }
+      // a few larger glows
+      for(let i=0;i<12;i++){
+        const x = Math.random()*1024;
+        const y = Math.random()*520;
+        out += `<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="6" fill="#eaf0ff" opacity=".04"/>`;
+      }
+      return out;
+    }
+
+    function groundSVG(){
+      return `
+      <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#133a2b"/>
+            <stop offset="1" stop-color="#0b231b"/>
+          </linearGradient>
+          <filter id="n">
+            <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="4" stitchTiles="stitch"/>
+            <feColorMatrix type="matrix" values="
+              1 0 0 0 0
+              0 1 0 0 0
+              0 0 1 0 0
+              0 0 0 .25 0"/>
+          </filter>
+          <pattern id="stripes" width="48" height="48" patternUnits="userSpaceOnUse">
+            <path d="M0 36 L48 12" stroke="#62f6d2" stroke-opacity=".10" stroke-width="6" />
+          </pattern>
+        </defs>
+        <rect width="1024" height="1024" fill="url(#g)"/>
+        <rect width="1024" height="1024" fill="url(#stripes)" opacity=".55"/>
+        <rect width="1024" height="1024" filter="url(#n)" opacity=".55"/>
+        <g opacity=".22">
+          ${pebbles(140)}
+        </g>
+      </svg>`;
+    }
+
+    function pebbles(n){
+      let out = '';
+      for(let i=0;i<n;i++){
+        const x = Math.random()*1024;
+        const y = Math.random()*1024;
+        const rx = Math.random()*18 + 8;
+        const ry = Math.random()*10 + 5;
+        const rot = Math.random()*180;
+        out += `<ellipse cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" rx="${rx.toFixed(2)}" ry="${ry.toFixed(2)}" fill="#0b0f14" opacity="${(Math.random()*0.16+0.06).toFixed(2)}" transform="rotate(${rot.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)})"/>`;
+      }
+      return out;
+    }
+
+    function pipeSVG(){
+      return `
+      <svg xmlns="http://www.w3.org/2000/svg" width="512" height="1024">
+        <defs>
+          <linearGradient id="p" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#26c9a6"/>
+            <stop offset=".35" stop-color="#7ff7de"/>
+            <stop offset=".65" stop-color="#1fb896"/>
+            <stop offset="1" stop-color="#0e7c66"/>
+          </linearGradient>
+          <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+            <stop offset=".45" stop-color="#ffffff" stop-opacity=".18"/>
+            <stop offset=".55" stop-color="#ffffff" stop-opacity=".04"/>
+            <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+          </linearGradient>
+          <filter id="n">
+            <feTurbulence type="fractalNoise" baseFrequency=".95" numOctaves="3" stitchTiles="stitch"/>
+            <feColorMatrix type="matrix" values="
+              1 0 0 0 0
+              0 1 0 0 0
+              0 0 1 0 0
+              0 0 0 .20 0"/>
+          </filter>
+        </defs>
+        <rect width="512" height="1024" fill="url(#p)"/>
+        <rect x="0" y="0" width="512" height="1024" fill="url(#shine)"/>
+        <g opacity=".22">
+          <rect x="24" y="0" width="8" height="1024" fill="#0a2a24"/>
+          <rect x="460" y="0" width="10" height="1024" fill="#0a2a24"/>
+        </g>
+        <rect width="512" height="1024" filter="url(#n)" opacity=".45"/>
+      </svg>`;
+    }
+
+    function birdSVG(){
+      // A cute "feather" texture used on the body sphere.
+      return `
+      <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512">
+        <defs>
+          <radialGradient id="g" cx="35%" cy="30%" r="70%">
+            <stop offset="0" stop-color="#ffe6a3"/>
+            <stop offset=".55" stop-color="#ffcf5c"/>
+            <stop offset="1" stop-color="#d79a2f"/>
+          </radialGradient>
+          <filter id="n">
+            <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" stitchTiles="stitch"/>
+            <feColorMatrix type="matrix" values="
+              1 0 0 0 0
+              0 1 0 0 0
+              0 0 1 0 0
+              0 0 0 .14 0"/>
+          </filter>
+          <pattern id="f" width="60" height="60" patternUnits="userSpaceOnUse" patternTransform="rotate(-18)">
+            <path d="M0 40 C 16 18, 44 18, 60 40" fill="none" stroke="#0b1326" stroke-opacity=".12" stroke-width="6" stroke-linecap="round"/>
+            <path d="M0 46 C 16 24, 44 24, 60 46" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="4" stroke-linecap="round"/>
+          </pattern>
+        </defs>
+        <rect width="512" height="512" fill="url(#g)"/>
+        <rect width="512" height="512" fill="url(#f)" opacity=".9"/>
+        <rect width="512" height="512" filter="url(#n)" opacity=".55"/>
+      </svg>`;
+    }
+  </script>
+</body>
+</html>

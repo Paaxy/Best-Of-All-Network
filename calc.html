@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Scientific Calculator</title>
+<style>
+  body { font-family: sans-serif; display: flex; justify-content: center; margin-top: 40px; }
+  .calc { width: 320px; background: #222; color: #fff; padding: 20px; border-radius: 10px; }
+  .display { background: #000; padding: 10px; font-size: 20px; text-align: right; margin-bottom: 10px; border-radius: 5px; }
+  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  button { padding: 12px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; }
+  button.op { background: #444; }
+  button.num { background: #333; }
+  button.eq { background: #0a84ff; color: #fff; grid-column: span 2; }
+</style>
+</head>
+<body>
+<div class="calc">
+  <div id="display" class="display">0</div>
+  <div class="grid">
+    <!-- Row 1 -->
+    <button class="op" data-k="C">C</button>
+    <button class="op" data-k="DEL">DEL</button>
+    <button class="op" data-k="(">(</button>
+    <button class="op" data-k=")">)</button>
+    <button class="op" data-k="^">x^y</button>
+    <!-- Row 2 -->
+    <button class="op" data-k="sin(">sin</button>
+    <button class="op" data-k="cos(">cos</button>
+    <button class="op" data-k="tan(">tan</button>
+    <button class="op" data-k="log10(">log</button>
+    <button class="op" data-k="ln(">ln</button>
+    <!-- Row 3 -->
+    <button class="num" data-k="7">7</button>
+    <button class="num" data-k="8">8</button>
+    <button class="num" data-k="9">9</button>
+    <button class="op" data-k="/">÷</button>
+    <button class="op" data-k="%">mod</button>
+    <!-- Row 4 -->
+    <button class="num" data-k="4">4</button>
+    <button class="num" data-k="5">5</button>
+    <button class="num" data-k="6">6</button>
+    <button class="op" data-k="*">×</button>
+    <button class="op" data-k="-">−</button>
+    <!-- Row 5 -->
+    <button class="num" data-k="1">1</button>
+    <button class="num" data-k="2">2</button>
+    <button class="num" data-k="3">3</button>
+    <button class="op" data-k="+">+</button>
+    <button class="op" data-k="sqrt(">√</button>
+    <!-- Row 6 -->
+    <button class="num" data-k="0">0</button>
+    <button class="op" data-k=".">.</button>
+    <button class="op" data-k="pi">π</button>
+    <button class="op" data-k="e">e</button>
+    <button class="eq" data-k="=">=</button>
+  </div>
+</div>
+
+<script>
+const display = document.getElementById("display");
+let expr = "";
+
+function evaluate() {
+  try {
+    // Replace symbols with JS equivalents
+    let safeExpr = expr.replace(/÷/g,"/").replace(/×/g,"*").replace(/π/g,"Math.PI").replace(/e/g,"Math.E");
+    safeExpr = safeExpr.replace(/sqrt\(/g,"Math.sqrt(").replace(/log10\(/g,"Math.log10(").replace(/ln\(/g,"Math.log(")
+                       .replace(/sin\(/g,"Math.sin(").replace(/cos\(/g,"Math.cos(").replace(/tan\(/g,"Math.tan(");
+    const result = Function("return " + safeExpr)();
+    display.textContent = result;
+    expr = String(result);
+  } catch {
+    display.textContent = "Error";
+  }
+}
+
+document.querySelectorAll("button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const k = btn.dataset.k;
+    if (k === "C") { expr = ""; display.textContent = "0"; return; }
+    if (k === "DEL") { expr = expr.slice(0,-1); display.textContent = expr || "0"; return; }
+    if (k === "=") { evaluate(); return; }
+    expr += k;
+    display.textContent = expr;
+  });
+});
+</script>
+</body>
+</html>
