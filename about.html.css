@@ -125,6 +125,13 @@ body::before {
 }
 
 /* Header */
+
+/* Reset margins inside header */
+header, .header-content, .page-info, .header-subtitle {
+  margin: 0;
+  padding: 0;
+}
+
 header {
     background: linear-gradient(135deg, rgba(0, 217, 255, 0.15), rgba(0, 153, 255, 0.15));
     border: 2px solid var(--glass-border);
@@ -194,41 +201,68 @@ header p {
     margin-top: 8px;
 }
 
-/* Logo */
+/* Logo adjustments */
 #logo {
-    display: block;
-    margin: 8px auto 0; /* Reduced top margin from 16px to 8px */
-    width: clamp(80px, 12vw, 120px);
-    height: auto;
-    border-radius: 50%;
-    border: 3px solid var(--primary);
-    box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
-    transition: transform 0.35s ease, box-shadow 0.35s ease;
-    animation: float 4s ease-in-out infinite;
+  display: block;
+  margin: 8px auto 8px; /* top and bottom margins reduced */
+  width: clamp(80px, 12vw, 120px);
+  height: auto;
+  border-radius: 50%;
+  border: 3px solid var(--primary);
+  box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  animation: float 4s ease-in-out infinite;
 }
 
+/* Header content layout */
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 8px; /* small gap below logo and page-info */
+}
 
+/* Page info text spacing */
+.page-info h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
 
+.page-info .page-name {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--secondary);
+}
+
+/* Subtitle spacing */
+.header-subtitle {
+  margin: 0 auto 12px; /* reduce bottom margin */
+  max-width: 600px;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text-light);
+}
 
 #logo:hover {
     transform: scale(1.1);
     box-shadow: 0 12px 36px rgba(0, 217, 255, 0.6);
 }
 
-/* Navigation */
+/* Navigation margin */
 nav {
-    margin-top: 10px; /* Reduced from 20px to 10px */
-    background: linear-gradient(135deg, rgba(0, 153, 255, 0.1), rgba(255, 0, 110, 0.05));
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    border-radius: 15px;
-    animation: slideInDown 1s ease-out 0.1s both;
+  margin-top: 8px; /* reduce space between header and nav */
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(0, 153, 255, 0.1), rgba(255, 0, 110, 0.05));
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  animation: slideInDown 1s ease-out 0.1s both;
 }
 
 nav ul {
