@@ -1,7 +1,7 @@
 {
   "name": "Best Of All Network",
   "short_name": "BOAN",
-  "description": "Experience the Best Of All Network in a sleek, app-like interface with a fresh blue and white theme.",
+  "description": "Best Of All Network - Your Ultimate Hub for Entertainment, Updates, and Information. Discover a world of fun, stay informed with the latest updates, and explore a wealth of information all in one place. Join us at Best Of All Network, where everything you need is just a click away! Still in development.",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
