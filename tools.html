@@ -551,8 +551,43 @@ document.getElementById('case-title-btn').addEventListener('click', () => {
         allow="clipboard-write"
         loading="lazy">
 </iframe>
-<script>
-  // Additional scripts can be added here if needed
+
+<script type="module">
+  import { OpenRouter } from '@openrouter/sdk';
+
+const openRouter = new OpenRouter({
+  apiKey: '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',
+  defaultHeaders: {
+    'HTTP-Referer': 'https://best-of-all-network.netlify.app/tools',  // Optional but recommended
+    'X-Title': 'Best Of All Network',                   // Optional but recommended
+  },
+});
+
+async function chatWithAI(prompt) {
+  try {
+    const completion = await openRouter.chat.send({
+      model: 'openai/gpt-4o-mini',  // latest GPT-4o-mini model
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      stream: false,
+    });
+
+    console.log(completion.choices[0].message.content);
+    return completion.choices[0].message.content;
+  } catch (error) {
+    console.error('OpenRouter SDK error:', error);
+    throw error;
+  }
+}
+
+// Example usage:
+chatWithAI('What is the meaning of life?').then(console.log);
+
 </script>
+
 </body>
 </html>
