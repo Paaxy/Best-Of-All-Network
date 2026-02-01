@@ -294,5 +294,253 @@
   });
 </script>
 
+<section class="tool-card" role="listitem" aria-labelledby="calc-title">
+  <h3 id="calc-title">Basic Calculator</h3>
+  <input type="text" id="calc-display" readonly placeholder="0" />
+  <div id="calc-buttons">
+    <button type="button" data-value="7">7</button>
+    <button type="button" data-value="8">8</button>
+    <button type="button" data-value="9">9</button>
+    <button type="button" data-value="/">÷</button>
+    <button type="button" data-value="4">4</button>
+    <button type="button" data-value="5">5</button>
+    <button type="button" data-value="6">6</button>
+    <button type="button" data-value="*">×</button>
+    <button type="button" data-value="1">1</button>
+    <button type="button" data-value="2">2</button>
+    <button type="button" data-value="3">3</button>
+    <button type="button" data-value="-">−</button>
+    <button type="button" data-value="0">0</button>
+    <button type="button" data-value=".">.</button>
+    <button type="button" id="calc-clear">C</button>
+    <button type="button" data-value="+">+</button>
+    <button type="button" id="calc-equals" style="grid-column: span 4;">=</button>
+  </div>
+</section>
+
+<style>
+  #calc-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+#calc-buttons button {
+  padding: 12px;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #004d4d;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+}
+
+#calc-buttons button:hover {
+  background: var(--brand);
+}
+#calc-display {
+  width: 100%;
+  padding: 12px;
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255 255 255 / 0.15);
+  color: var(--text-light);
+  font-family: monospace, monospace;
+  text-align: right;
+}
+#calc-display::placeholder {
+  color: var(--text-muted);
+}
+
+</style>
+
+<script>const calcDisplay = document.getElementById('calc-display');
+const calcButtons = document.getElementById('calc-buttons');
+
+calcButtons.addEventListener('click', e => {
+  if (!e.target.matches('button')) return;
+  const btn = e.target;
+  const val = btn.getAttribute('data-value');
+
+  if (btn.id === 'calc-clear') {
+    calcDisplay.value = '';
+    return;
+  }
+  if (btn.id === 'calc-equals') {
+    try {
+      calcDisplay.value = eval(calcDisplay.value) || '';
+    } catch {
+      calcDisplay.value = 'Error';
+    }
+    return;
+  }
+  calcDisplay.value += val;
+});
+</script>
+
+<section class="tool-card" role="listitem" aria-labelledby="temp-title">
+  <h3 id="temp-title">Temperature Converter</h3>
+  <input type="number" id="temp-input" placeholder="Enter temperature" />
+  <select id="temp-unit">
+    <option value="c">Celsius to Fahrenheit</option>
+    <option value="f">Fahrenheit to Celsius</option>
+  </select>
+  <button id="temp-convert-btn" type="button">Convert</button>
+  <pre class="result" id="temp-result" aria-live="polite" aria-atomic="true">Result will appear here.</pre>
+</section>
+
+<script>document.getElementById('temp-convert-btn').addEventListener('click', () => {
+  const input = parseFloat(document.getElementById('temp-input').value);
+  const unit = document.getElementById('temp-unit').value;
+  const resultEl = document.getElementById('temp-result');
+
+  if (isNaN(input)) {
+    resultEl.textContent = 'Please enter a valid number.';
+    return;
+  }
+
+  let result;
+  if (unit === 'c') {
+    result = (input * 9/5) + 32;
+    resultEl.textContent = `${input}°C = ${result.toFixed(2)}°F`;
+  } else {
+    result = (input - 32) * 5/9;
+    resultEl.textContent = `${input}°F = ${result.toFixed(2)}°C`;
+  }
+});
+</script>
+
+<section class="tool-card" role="listitem" aria-labelledby="loan-title">
+  <h3 id="loan-title">Loan Calculator</h3>
+  <label for="loan-amount">Loan Amount ($):</label>
+  <input type="number" id="loan-amount" placeholder="e.g. 10000" />
+  <label for="loan-rate">Annual Interest Rate (%):</label>
+  <input type="number" id="loan-rate" step="0.01" placeholder="e.g. 5" />
+  <label for="loan-years">Loan Term (years):</label>
+  <input type="number" id="loan-years" placeholder="e.g. 5" />
+  <button id="loan-calc-btn" type="button">Calculate</button>
+  <pre class="result" id="loan-result" aria-live="polite" aria-atomic="true">Monthly payment will appear here.</pre>
+</section>
+
+<script>document.getElementById('loan-calc-btn').addEventListener('click', () => {
+  const amount = parseFloat(document.getElementById('loan-amount').value);
+  const annualRate = parseFloat(document.getElementById('loan-rate').value);
+  const years = parseFloat(document.getElementById('loan-years').value);
+  const resultEl = document.getElementById('loan-result');
+
+  if (isNaN(amount) || isNaN(annualRate) || isNaN(years) || amount <= 0 || years <= 0) {
+    resultEl.textContent = 'Please enter valid positive numbers.';
+    return;
+  }
+
+  const monthlyRate = annualRate / 100 / 12;
+  const n = years * 12;
+  const monthlyPayment = (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -n));
+
+  resultEl.textContent = `Monthly Payment: $${monthlyPayment.toFixed(2)}`;
+});
+</script>
+
+<section class="tool-card" role="listitem" aria-labelledby="bmi-title">
+  <h3 id="bmi-title">BMI Calculator</h3>
+  <label for="bmi-weight">Weight (kg):</label>
+  <input type="number" id="bmi-weight" placeholder="e.g. 70" />
+  <label for="bmi-height">Height (cm):</label>
+  <input type="number" id="bmi-height" placeholder="e.g. 170" />
+  <button id="bmi-calc-btn" type="button">Calculate BMI</button>
+  <pre class="result" id="bmi-result" aria-live="polite" aria-atomic="true">Your BMI will appear here.</pre>
+</section>
+
+<script>
+  document.getElementById('bmi-calc-btn').addEventListener('click', () => {
+  const weight = parseFloat(document.getElementById('bmi-weight').value);
+  const heightCm = parseFloat(document.getElementById('bmi-height').value);
+  const resultEl = document.getElementById('bmi-result');
+
+  if (isNaN(weight) || isNaN(heightCm) || weight <= 0 || heightCm <= 0) {
+    resultEl.textContent = 'Please enter valid positive numbers.';
+    return;
+  }
+
+  const heightM = heightCm / 100;
+  const bmi = weight / (heightM * heightM);
+  resultEl.textContent = `Your BMI is ${bmi.toFixed(2)} (${bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese'})`;
+});
+
+</script>
+
+<section class="tool-card" role="listitem" aria-labelledby="pass-title">
+  <h3 id="pass-title">Password Generator</h3>
+  <label for="pass-length">Length:</label>
+  <input type="number" id="pass-length" min="4" max="64" value="12" />
+  <label><input type="checkbox" id="pass-uppercase" checked /> Include Uppercase</label>
+  <label><input type="checkbox" id="pass-lowercase" checked /> Include Lowercase</label>
+  <label><input type="checkbox" id="pass-numbers" checked /> Include Numbers</label>
+  <label><input type="checkbox" id="pass-symbols" /> Include Symbols</label>
+  <button id="pass-gen-btn" type="button">Generate Password</button>
+  <pre class="result" id="pass-result" aria-live="polite" aria-atomic="true">Generated password will appear here.</pre>
+</section>
+
+<script>
+  document.getElementById('pass-gen-btn').addEventListener('click', () => {
+  const length = parseInt(document.getElementById('pass-length').value, 10);
+  const includeUpper = document.getElementById('pass-uppercase').checked;
+  const includeLower = document.getElementById('pass-lowercase').checked;
+  const includeNumbers = document.getElementById('pass-numbers').checked;
+  const includeSymbols = document.getElementById('pass-symbols').checked;
+  const resultEl = document.getElementById('pass-result');
+
+  if (isNaN(length) || length < 4 || length > 64) {
+    resultEl.textContent = 'Length must be between 4 and 64.';
+    return;
+  }
+
+  let charset = '';
+  if (includeUpper) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if (includeLower) charset += 'abcdefghijklmnopqrstuvwxyz';
+  if (includeNumbers) charset += '0123456789';
+  if (includeSymbols) charset += '!@#$%^&*()-_=+[]{}|;:,.<>?';
+
+  if (!charset) {
+    resultEl.textContent = 'Select at least one character type.';
+    return;
+  }
+
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    password += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  resultEl.textContent = password;
+});
+
+</script>
+
+<section class="tool-card" role="listitem" aria-labelledby="case-title">
+  <h3 id="case-title">Text Case Converter</h3>
+  <textarea id="case-input" rows="4" placeholder="Enter text here..."></textarea>
+  <button id="case-upper-btn" type="button">UPPERCASE</button>
+  <button id="case-lower-btn" type="button">lowercase</button>
+  <button id="case-title-btn" type="button">Title Case</button>
+  <pre class="result" id="case-result" aria-live="polite" aria-atomic="true">Converted text will appear here.</pre>
+</section>
+
+<script>const caseInput = document.getElementById('case-input');
+const caseResult = document.getElementById('case-result');
+
+document.getElementById('case-upper-btn').addEventListener('click', () => {
+  caseResult.textContent = caseInput.value.toUpperCase();
+});
+document.getElementById('case-lower-btn').addEventListener('click', () => {
+  caseResult.textContent = caseInput.value.toLowerCase();
+});
+document.getElementById('case-title-btn').addEventListener('click', () => {
+  const titleCase = caseInput.value.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+  caseResult.textContent = titleCase;
+});
+</script>
 </body>
 </html>
