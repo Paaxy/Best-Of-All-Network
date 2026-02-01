@@ -201,10 +201,17 @@ header p {
     margin-top: 8px;
 }
 
-/* Logo adjustments */
+.header-content {
+  display: flex;
+  align-items: center; /* Vertically center logo and text */
+  justify-content: center; /* Center horizontally */
+  gap: 12px; /* Space between logo and text */
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  margin-bottom: 8px;
+}
+
 #logo {
-  display: block;
-  margin: 8px auto 8px; /* top and bottom margins reduced */
+  margin: 0; /* Remove top margin */
   width: clamp(80px, 12vw, 120px);
   height: auto;
   border-radius: 50%;
@@ -214,19 +221,19 @@ header p {
   animation: float 4s ease-in-out infinite;
 }
 
-/* Header content layout */
-.header-content {
+.page-info {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
   justify-content: center;
-  margin-bottom: 8px; /* small gap below logo and page-info */
+  text-align: left; /* Align text left for better readability */
+  gap: 4px;
+  max-width: 300px; /* Limit width to avoid too much spacing */
 }
 
-/* Page info text spacing */
 .page-info h1 {
   margin: 0;
   font-size: 1.5rem;
+  color: var(--primary);
 }
 
 .page-info .page-name {
@@ -235,14 +242,14 @@ header p {
   color: var(--secondary);
 }
 
-/* Subtitle spacing */
 .header-subtitle {
-  margin: 0 auto 12px; /* reduce bottom margin */
+  margin: 0 auto 12px;
   max-width: 600px;
   text-align: center;
   font-size: 1rem;
   color: var(--text-light);
 }
+
 
 #logo:hover {
     transform: scale(1.1);
