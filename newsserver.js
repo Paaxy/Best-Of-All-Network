@@ -15,6 +15,10 @@ app.get("/", (_req, res) => {
 });
 
 const API_KEY = process.env.NEWS_API_KEY;
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
 
 // Simple rephrasing function
 function rephrase(text) {
