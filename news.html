@@ -85,5 +85,11 @@
 
   <script src="app.js"></script>
   <script src="newsserver.js"></script>
+  <script>fetch("/api/news")
+  .then(res => res.json())
+  .then(data => {
+    console.log(data);
+  });
+</script>
 </body>
 </html>
