@@ -10,9 +10,10 @@ const app = express();
 app.use(express.static("./"));
 
 // Serve news.html when visiting the root URL
-app.get("/", (_req, res) => {
+app.get("/", (req, res) => {
   res.sendFile("news.html", { root: "." });
 });
+
 app.use(express.static("./"));
 
 
