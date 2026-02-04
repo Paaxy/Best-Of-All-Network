@@ -1,0 +1,23 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-y: auto;   /* Enable vertical scroll */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Use min-height to allow content to expand */
+  width: 100%;
+}

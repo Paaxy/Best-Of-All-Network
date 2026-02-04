@@ -125,6 +125,13 @@ body::before {
 }
 
 /* Header */
+
+/* Reset margins inside header */
+header, .header-content, .page-info, .header-subtitle {
+  margin: 0;
+  padding: 0;
+}
+
 header {
     background: linear-gradient(135deg, rgba(0, 217, 255, 0.15), rgba(0, 153, 255, 0.15));
     border: 2px solid var(--glass-border);
@@ -194,38 +201,75 @@ header p {
     margin-top: 8px;
 }
 
-/* Logo */
-#logo {
-    display: block;
-    margin: 16px auto 0;
-    width: clamp(80px, 12vw, 120px);
-    height: auto;
-    border-radius: 50%;
-    border: 3px solid var(--primary);
-    box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
-    transition: transform 0.35s ease, box-shadow 0.35s ease;
-    animation: float 4s ease-in-out infinite;
+.header-content {
+  display: flex;
+  align-items: center; /* Vertically center logo and text */
+  justify-content: center; /* Center horizontally */
+  gap: 12px; /* Space between logo and text */
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  margin-bottom: 8px;
 }
+
+#logo {
+  margin: 0; /* Remove top margin */
+  width: clamp(80px, 12vw, 120px);
+  height: auto;
+  border-radius: 50%;
+  border: 3px solid var(--primary);
+  box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  animation: float 4s ease-in-out infinite;
+}
+
+.page-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left; /* Align text left for better readability */
+  gap: 4px;
+  max-width: 300px; /* Limit width to avoid too much spacing */
+}
+
+.page-info h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+.page-info .page-name {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--secondary);
+}
+
+.header-subtitle {
+  margin: 0 auto 12px;
+  max-width: 600px;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text-light);
+}
+
 
 #logo:hover {
     transform: scale(1.1);
     box-shadow: 0 12px 36px rgba(0, 217, 255, 0.6);
 }
 
-/* Navigation */
+/* Navigation margin */
 nav {
-    margin-top: 20px;
-    background: linear-gradient(135deg, rgba(0, 153, 255, 0.1), rgba(255, 0, 110, 0.05));
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    border-radius: 15px;
-    animation: slideInDown 1s ease-out 0.1s both;
+  margin-top: 8px; /* reduce space between header and nav */
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(0, 153, 255, 0.1), rgba(255, 0, 110, 0.05));
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  animation: slideInDown 1s ease-out 0.1s both;
 }
 
 nav ul {
@@ -620,7 +664,8 @@ html, body {
   width: 100%;
   box-sizing: border-box;
   font-family: sans-serif;
-  overflow: hidden;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-y: auto;   /* Enable vertical scroll */
 }
 
 *,
@@ -632,6 +677,6 @@ html, body {
 #app {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100vh; /* Use min-height to allow content to expand */
   width: 100%;
 }

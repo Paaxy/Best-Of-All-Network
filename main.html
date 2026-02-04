@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="apple-touch-icon" href="/logo.png">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#00000000">
+
     <link rel="canonical" href="https://best-of-all-network.netlify.app/main" />
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -11,6 +17,12 @@
     <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <style>
+        html, body {
+  background-color: #yourColorHere;
+  margin: 0;
+  height: 100%;
+}
+
         * {
             margin: 0;
             padding: 0;
@@ -83,7 +95,8 @@
             background: #1e90ff; /* Example footer background */
         }
     </style>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
     <title>Best Of All - NETWORK</title>
     <link rel="stylesheet" href="animations.css">
     <link rel="stylesheet" href="main.html.css">
@@ -125,6 +138,7 @@
             <li><a href="about.html">About</a></li>
             <li><a href="entertainment.html">Entertainment</a></li>
             <li><a href="updateslog.html">Updates Log</a></li>
+            <li><a href="tools.html">Tools</a></li>
         </ul>
     </nav>
     <main>
@@ -224,41 +238,6 @@
     }
     </style>
     <script>
-function resizeEverything() {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-
-  // Resize canvas if present
-  const canvas = document.querySelector('canvas');
-  if (canvas) {
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
-    canvas.width = width;
-    canvas.height = height;
-  }
-
-  // Resize Three.js renderer and camera if they exist
-  if (window.renderer && window.camera) {
-    renderer.setSize(width, height);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-  }
-
-  // Resize full-screen containers
-  const fullElements = document.querySelectorAll(
-    '.fullscreen, .fullpage, #app, #main, #game'
-  );
-  fullElements.forEach(el => {
-    el.style.width = width + 'px';
-    el.style.height = height + 'px';
-  });
-}
-
-// Run once on load
-window.addEventListener('DOMContentLoaded', resizeEverything);
-
-// Re-run on window resize
-window.addEventListener('resize', resizeEverything);
 </script>
 </body>
 </html>
