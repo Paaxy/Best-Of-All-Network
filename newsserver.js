@@ -12,12 +12,12 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Serve static files (like news.html, style.css, etc.)
+// Serve static files (like CSS, JS, images)
 app.use(express.static(__dirname));
 
 // Serve news.html at root
 app.get("/", (req, res) => {
-  res.sendFile("news.html", { root: __dirname });
+  res.sendFile(path.join(__dirname, "news.html"));
 });
 
 const API_KEY = process.env.NEWS_API_KEY;
@@ -32,7 +32,7 @@ function rephrase(text) {
     .replace(/calls/gi, "urges");
 }
 
-// API endpoint to fetch and rephrase news
+// API endpoint
 app.get("/api/news", async (_req, res) => {
   try {
     const response = await fetch(
