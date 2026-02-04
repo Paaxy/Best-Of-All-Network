@@ -12,7 +12,7 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Serve static files (like CSS, JS, images)
+// Serve static files (CSS, JS, images)
 app.use(express.static(__dirname));
 
 // Serve news.html at root
