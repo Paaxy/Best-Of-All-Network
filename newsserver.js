@@ -1,27 +1,27 @@
 import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
 const app = express();
 
-// Serve all static files (news.html, style.css, app.js, images, etc.)
-app.use(express.static("./"));
+// Fix __dirname for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Serve news.html when visiting the root URL
+// Serve static files (like news.html, style.css, etc.)
+app.use(express.static(__dirname));
+
+// Serve news.html at root
 app.get("/", (req, res) => {
-  res.sendFile("news.html", { root: "." });
+  res.sendFile("news.html", { root: __dirname });
 });
-
-app.use(express.static("./"));
-
 
 const API_KEY = process.env.NEWS_API_KEY;
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
 
 // Simple rephrasing function
 function rephrase(text) {
@@ -32,6 +32,7 @@ function rephrase(text) {
     .replace(/calls/gi, "urges");
 }
 
+// API endpoint to fetch and rephrase news
 app.get("/api/news", async (_req, res) => {
   try {
     const response = await fetch(
@@ -39,14 +40,20 @@ app.get("/api/news", async (_req, res) => {
     );
     const data = await response.json();
 
-    const articles = data.articles.map(a => ({
+    const articles = data.articles.map((a) => ({
       original: a.title,
       rephrased: rephrase(a.title),
       url: a.url,
-      source: a.source.name
+      image: a.urlToImage,
+      source: a.source.name,
     }));
+
     res.json(articles);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch news" });
   }
+});
+
+app.listen(PORT, () => {
+  console.log(`🌐 Server running at http://localhost:${PORT}`);
 });
