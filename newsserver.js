@@ -13,6 +13,8 @@ app.use(express.static("./"));
 app.get("/", (_req, res) => {
   res.sendFile("news.html", { root: "." });
 });
+app.use(express.static("./"));
+
 
 const API_KEY = process.env.NEWS_API_KEY;
 const PORT = process.env.PORT || 3000;
