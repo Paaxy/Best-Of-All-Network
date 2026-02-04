@@ -15,10 +15,10 @@ const __dirname = path.dirname(__filename);
 // Serve static files (CSS, JS, images)
 app.use(express.static(__dirname));
 
-// Serve news.html at root
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "news.html"));
+  res.sendFile(path.join(__dirname, "test.html"));
 });
+
 
 const API_KEY = process.env.NEWS_API_KEY;
 const PORT = process.env.PORT || 3000;
