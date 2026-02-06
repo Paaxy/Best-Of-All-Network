@@ -1,57 +1,120 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <title>Best Of All Network - Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Best of All Network - AUTH</title>
 
-    <!-- Supabase SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #4a90e2, #9013fe);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .box {
+            background: rgba(0,0,0,0.35);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #00d084;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #00b874;
+        }
+
+        #logoutBtn {
+            margin-top: 20px;
+            background: #ff4f4f;
+            color: white;
+        }
+
+        #logoutBtn:hover {
+            background: #e04444;
+        }
+
+        #msg {
+            margin-top: 10px;
+            color: #ffdddd;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 
-    <h2>Login to Best Of All Network</h2>
+<div class="box">
+    <h2>Enter Password</h2>
 
-    <button id="google">Login with Google</button>
-    <button id="github">Login with GitHub</button>
+    <input id="pass" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
 
     <p id="msg"></p>
 
-    <script>
-        // Replace these with your real Supabase credentials
-        const SUPABASE_URL = "YOUR_SUPABASE_URL";
-        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+    <button id="logoutBtn" onclick="logout()">Logout</button>
+</div>
 
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<script>
+    // Change this to your password
+    const CORRECT_PASSWORD = "paaxnetwork";
 
-        // Google Login
-        document.getElementById("google").onclick = async () => {
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: "google",
-                options: {
-                    redirectTo: "https://best-of-all-network.netlify.app/main"
-                }
-            });
+    function login() {
+        const input = document.getElementById("pass").value;
 
-            if (error) {
-                document.getElementById("msg").innerText = error.message;
-            }
-        };
+        if (input === CORRECT_PASSWORD) {
+            localStorage.setItem("loggedIn", "true");
+            window.location.href = "/main";
+        } else {
+            document.getElementById("msg").innerText = "Wrong password";
+        }
+    }
 
-        // GitHub Login (optional)
-        document.getElementById("github").onclick = async () => {
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: "github",
-                options: {
-                    redirectTo: "https://best-of-all-network.netlify.app/main"
-                }
-            });
+    // Protect this page if needed
+    if (localStorage.getItem("loggedIn") !== "true") {
+        // If this file *is* the login page, do nothing.
+        // If this file is used as a protected page, uncomment:
+        // window.location.href = "/loginindex.html";
+    }
 
-            if (error) {
-                document.getElementById("msg").innerText = error.message;
-            }
-        };
-    </script>
+    function logout() {
+        localStorage.removeItem("loggedIn");
+        window.location.href = "/loginindex.html";
+    }
+</script>
 
 </body>
 </html>
