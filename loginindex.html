@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Best Of All Network - Login</title>
+    <title>Best Of All Network - Auth</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -77,37 +77,68 @@
 </head>
 <body>
 
-<div class="box">
-    <h2>Enter Password</h2>
-
-    <input id="pass" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-
-    <p id="msg"></p>
-
-    <button id="logoutBtn" onclick="logout()">Logout</button>
+<div class="box" id="authBox">
+    <!-- Content will be injected by JS -->
 </div>
 
 <script>
-    // Change this to your password
-    const CORRECT_PASSWORD = "paaxnetwork";
+    // Check if user is already logged in
+    if (localStorage.getItem("loggedIn") === "true") {
+        window.location.href = "/main";
+    }
+
+    const authBox = document.getElementById("authBox");
+
+    // Check if password exists
+    const savedPassword = localStorage.getItem("password");
+
+    if (!savedPassword) {
+        showSignup();
+    } else {
+        showLogin();
+    }
+
+    function showSignup() {
+        authBox.innerHTML = `
+            <h2>Create Password</h2>
+            <input id="newPass" type="password" placeholder="Create a password">
+            <button onclick="createPassword()">Finish</button>
+            <p id="msg"></p>
+        `;
+    }
+
+    function showLogin() {
+        authBox.innerHTML = `
+            <h2>Enter Password</h2>
+            <input id="pass" type="password" placeholder="Password">
+            <button onclick="login()">Sign In</button>
+            <p id="msg"></p>
+        `;
+    }
+
+    function createPassword() {
+        const newPass = document.getElementById("newPass").value;
+
+        if (newPass.length < 4) {
+            document.getElementById("msg").innerText = "Password too short";
+            return;
+        }
+
+        localStorage.setItem("password", newPass);
+        localStorage.setItem("loggedIn", "true");
+        window.location.href = "/main";
+    }
 
     function login() {
         const input = document.getElementById("pass").value;
+        const correct = localStorage.getItem("password");
 
-        if (input === CORRECT_PASSWORD) {
+        if (input === correct) {
             localStorage.setItem("loggedIn", "true");
             window.location.href = "/main";
         } else {
             document.getElementById("msg").innerText = "Wrong password";
         }
-    }
-
-    // Protect this page if needed
-    if (localStorage.getItem("loggedIn") !== "true") {
-        // If this file *is* the login page, do nothing.
-        // If this file is used as a protected page, uncomment:
-        // window.location.href = "/loginindex.html";
     }
 
     function logout() {
