@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best of All Network - AUTH</title>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <h2>Login to Best Of All Network</h2>
+
+    <button id="google">Login with Google</button>
+    <button id="github">Login with GitHub</button>
+
+    <p id="msg"></p>
+
+    <script>
+        // Replace these with your real Supabase credentials
+        const SUPABASE_URL = "YOUR_SUPABASE_URL";
+        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Google Login
+        document.getElementById("google").onclick = async () => {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: "google",
+                options: {
+                    redirectTo: "https://best-of-all-network.netlify.app/main"
+                }
+            });
+
+            if (error) {
+                document.getElementById("msg").innerText = error.message;
+            }
+        };
+
+        // GitHub Login (optional)
+        document.getElementById("github").onclick = async () => {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: "github",
+                options: {
+                    redirectTo: "https://best-of-all-network.netlify.app/main"
+                }
+            });
+
+            if (error) {
+                document.getElementById("msg").innerText = error.message;
+            }
+        };
+    </script>
+
+</body>
+</html>
