@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const rootDir = path.resolve(__dirname, 'public'); // adjust to your output folder
+const rootDir = path.resolve(__dirname, '.'); // adjust to your output folder
 const files = fs.readdirSync(rootDir);
 
 const manifest = files.map(file => {
