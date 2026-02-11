@@ -28,9 +28,6 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox
 workbox.core.clientsClaim();
 workbox.core.skipWaiting();
 
-// Precache manifest injected at build time
-workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
-
 // Cache the files-list.json
 workbox.routing.registerRoute(
   ({url}) => url.pathname.endsWith('files-list.json'),
