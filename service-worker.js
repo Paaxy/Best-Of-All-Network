@@ -22,3 +22,20 @@ workbox.routing.registerRoute(
     cacheName: 'static-resources',
   })
 );
+// sw.js
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
+
+workbox.core.clientsClaim();
+workbox.core.skipWaiting();
+
+// Precache manifest injected at build time
+workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
+
+// Cache the files-list.json
+workbox.routing.registerRoute(
+  ({url}) => url.pathname.endsWith('files-list.json'),
+  new workbox.strategies.NetworkFirst({
+    cacheName: 'files-list-cache',
+  })
+);
+
