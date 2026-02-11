@@ -38,14 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => console.log('Service worker registered!', reg))
-      .catch(err => console.error('Service worker registration failed:', err));
-  });
-}
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').then(reg => {
+  navigator.serviceWorker.register('/service-worker.js').then(reg => {
     console.log('SW registered');
 
     fetch('/files-list.json')
