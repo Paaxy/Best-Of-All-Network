@@ -6,7 +6,6 @@
 <title>Tools • Best Of All Network</title>
 <meta name="description" content="Tools page for Best Of All Network with matching theme." />
 
-<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 
 <style>
@@ -23,30 +22,19 @@
   }
 
   /* Reset */
-  * {
-    box-sizing: border-box;
-  }
+  * { box-sizing: border-box; }
   body, html {
-    margin: 0; padding: 0; height: 100%;
+    margin: 0; padding: 0; min-height: 100%;
     font-family: 'Inter', sans-serif;
     background: linear-gradient(135deg, var(--bg0), var(--bg1));
     color: var(--text-light);
+    background-attachment: fixed;
   }
 
-  a {
-    color: var(--accent);
-    text-decoration: none;
-  }
-  a:hover {
-    text-decoration: underline;
-  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
 
-  /* Container */
-  .container {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 20px 24px;
-  }
+  .container { max-width: var(--max-width); margin: 0 auto; padding: 20px 24px; }
 
   /* Header */
   header {
@@ -62,62 +50,39 @@
     gap: 16px;
   }
   header .logo {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+    width: 48px; height: 48px; border-radius: 50%;
     background: radial-gradient(circle at center, var(--accent), var(--brand));
     box-shadow: 0 0 10px var(--accent);
     flex-shrink: 0;
   }
   header h1 {
     font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 1.8rem;
-    margin: 0;
+    font-weight: 700; font-size: 1.8rem; margin: 0;
     color: var(--text-light);
   }
-  header nav {
-    margin-left: auto;
-  }
+  header nav { margin-left: auto; }
   header nav a {
-    display: inline-block;
-    padding: 8px 16px;
-    margin-left: 12px;
-    border: 2px solid var(--accent);
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--text-light);
-    transition: background-color 0.3s ease, color 0.3s ease;
+    display: inline-block; padding: 8px 16px; margin-left: 12px;
+    border: 2px solid var(--accent); border-radius: 9999px;
+    font-weight: 600; font-size: 1rem; color: var(--text-light);
+    transition: all 0.3s ease;
   }
-  header nav a.active,
-  header nav a:hover {
-    background-color: var(--accent);
-    color: #004d4d;
+  header nav a.active, header nav a:hover {
+    background-color: var(--accent); color: #004d4d;
   }
 
-  /* Main */
-  main {
-    margin: 40px auto;
-    max-width: var(--max-width);
-  }
-
+  /* Grid & Cards */
+  main { margin: 40px auto; max-width: var(--max-width); }
   main h2 {
     font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 1.6rem;
-    margin-bottom: 24px;
+    font-weight: 700; font-size: 1.6rem; margin-bottom: 24px;
     color: var(--accent);
   }
-
-  /* Tools grid */
   .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 24px;
   }
-
-  /* Tool card */
   .tool-card {
     background: rgba(255 255 255 / 0.1);
     border-radius: var(--radius);
@@ -127,466 +92,248 @@
     flex-direction: column;
   }
   .tool-card h3 {
-    margin-top: 0;
-    margin-bottom: 12px;
+    margin-top: 0; margin-bottom: 12px;
     font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
     color: var(--accent);
   }
-  .tool-card textarea,
-  .tool-card input[type="text"],
-  .tool-card select {
+
+  /* Form Elements */
+  .tool-card textarea, .tool-card input, .tool-card select {
     background: rgba(255 255 255 / 0.15);
-    border: none;
-    border-radius: 10px;
-    color: var(--text-light);
-    padding: 10px 12px;
-    font-size: 1rem;
-    font-family: monospace, monospace;
-    resize: vertical;
-    margin-bottom: 12px;
+    border: none; border-radius: 10px;
+    color: var(--text-light); padding: 10px 12px;
+    font-size: 1rem; margin-bottom: 12px;
+    width: 100%;
   }
-  .tool-card textarea::placeholder,
-  .tool-card input::placeholder {
-    color: var(--text-muted);
-  }
+  .tool-card label { font-size: 0.85rem; margin-bottom: 4px; display: block; color: var(--text-muted); }
   .tool-card button {
-    background: var(--accent);
-    border: none;
-    border-radius: 9999px;
-    color: #004d4d;
-    font-weight: 700;
-    font-size: 1rem;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    align-self: flex-start;
+    background: var(--accent); border: none; border-radius: 9999px;
+    color: #004d4d; font-weight: 700; padding: 10px 20px;
+    cursor: pointer; transition: 0.3s; margin-bottom: 5px;
   }
-  .tool-card button:hover {
-    background: var(--brand);
-    color: #002a2a;
-  }
-  .tool-card .result {
-    background: rgba(255 255 255 / 0.15);
-    border-radius: 10px;
-    padding: 12px;
-    font-family: monospace, monospace;
-    font-size: 0.9rem;
-    color: var(--text-light);
-    white-space: pre-wrap;
-    min-height: 60px;
-    margin-top: 8px;
+  .tool-card button:hover { background: var(--brand); }
+  .result {
+    background: rgba(255 255 255 / 0.15); border-radius: 10px;
+    padding: 12px; font-family: monospace; font-size: 0.9rem;
+    color: var(--text-light); white-space: pre-wrap;
+    min-height: 50px; margin-top: 8px; overflow-x: auto;
   }
 
-  /* Responsive */
+  /* Specific Tool Styles */
+  #calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .palette-box { height: 60px; border-radius: 8px; flex: 1; transition: transform 0.2s; cursor: pointer; }
+  .palette-box:hover { transform: scale(1.05); }
+
   @media (max-width: 480px) {
-    header {
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-    }
-    header nav a {
-      margin-left: 8px;
-      padding: 6px 12px;
-      font-size: 0.9rem;
-    }
+    header { flex-direction: column; text-align: center; }
+    header nav { margin-left: 0; margin-top: 10px; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo" aria-hidden="true"></div>
+  <div class="logo"></div>
   <h1>Best Of All - NETWORK</h1>
-  <nav aria-label="Primary navigation">
-    <a href="/" >Home</a>
+  <nav>
+    <a href="/">Home</a>
     <a href="/about.html">About</a>
-    <a href="/entertainment.html">Entertainment</a>
-    <a href="/updateslog.html">Updates Log</a>
-    <a href="/tools.html" class="active" aria-current="page">Tools</a>
+    <a href="/tools.html" class="active">Tools</a>
   </nav>
 </header>
 
-<main class="container" role="main" aria-label="Tools page content">
+<main class="container">
   <h2>Tools</h2>
-  <div class="tools-grid" role="list">
+  <div class="tools-grid">
 
-    <!-- Example Tool: JSON Formatter -->
-    <section class="tool-card" role="listitem" aria-labelledby="json-title">
-      <h3 id="json-title">JSON Formatter</h3>
-      <textarea id="json-input" rows="6" placeholder='Paste JSON here...'></textarea>
-      <button id="json-format-btn" type="button">Format JSON</button>
-      <button id="json-minify-btn" type="button">Minify JSON</button>
-      <pre class="result" id="json-result" aria-live="polite" aria-atomic="true">Output will appear here.</pre>
+    <section class="tool-card">
+      <h3>JSON Formatter</h3>
+      <textarea id="json-input" rows="5" placeholder='Paste JSON here...'></textarea>
+      <div style="display:flex; gap:8px;">
+        <button id="json-format-btn">Format</button>
+        <button id="json-minify-btn">Minify</button>
+      </div>
+      <pre class="result" id="json-result">Output will appear here.</pre>
     </section>
 
-    <!-- Example Tool: Base64 Encoder -->
-    <section class="tool-card" role="listitem" aria-labelledby="b64-title">
-      <h3 id="b64-title">Base64 Encoder / Decoder</h3>
-      <textarea id="b64-input" rows="4" placeholder="Enter text to encode or decode"></textarea>
-      <button id="b64-encode-btn" type="button">Encode</button>
-      <button id="b64-decode-btn" type="button">Decode</button>
-      <pre class="result" id="b64-result" aria-live="polite" aria-atomic="true">Output will appear here.</pre>
+    <section class="tool-card">
+      <h3>Base64 Encoder</h3>
+      <textarea id="b64-input" rows="3" placeholder="Enter text..."></textarea>
+      <div style="display:flex; gap:8px;">
+        <button id="b64-encode-btn">Encode</button>
+        <button id="b64-decode-btn">Decode</button>
+      </div>
+      <pre class="result" id="b64-result">Output will appear here.</pre>
     </section>
 
-    <!-- Example Tool: UUID Generator -->
-    <section class="tool-card" role="listitem" aria-labelledby="uuid-title">
-      <h3 id="uuid-title">UUID v4 Generator</h3>
-      <button id="uuid-gen-btn" type="button">Generate UUID</button>
-      <pre class="result" id="uuid-result" aria-live="polite" aria-atomic="true">Click generate to create a UUID.</pre>
+    <section class="tool-card">
+      <h3>Basic Calculator</h3>
+      <input type="text" id="calc-display" readonly placeholder="0" style="text-align: right; font-size: 1.5rem;" />
+      <div id="calc-buttons">
+        <button data-value="7">7</button><button data-value="8">8</button><button data-value="9">9</button><button data-value="/">÷</button>
+        <button data-value="4">4</button><button data-value="5">5</button><button data-value="6">6</button><button data-value="*">×</button>
+        <button data-value="1">1</button><button data-value="2">2</button><button data-value="3">3</button><button data-value="-">−</button>
+        <button data-value="0">0</button><button data-value=".">.</button><button id="calc-clear">C</button><button data-value="+">+</button>
+        <button id="calc-equals" style="grid-column: span 4;">=</button>
+      </div>
+    </section>
+
+    <section class="tool-card">
+      <h3>Color Palette Generator</h3>
+      <div id="palette-container" style="display:flex; gap:8px; margin-bottom:12px;"></div>
+      <button id="palette-gen-btn">Generate Palette</button>
+      <pre class="result" id="palette-result">Codes will appear here.</pre>
+    </section>
+
+    <section class="tool-card">
+      <h3>Word & Char Counter</h3>
+      <textarea id="counter-input" rows="4" placeholder="Start typing..."></textarea>
+      <pre class="result" id="counter-result">Characters: 0 | Words: 0</pre>
+    </section>
+
+    <section class="tool-card">
+      <h3>Password Generator</h3>
+      <label>Length: <input type="number" id="pass-length" value="16" min="4" max="50" style="width: 60px; margin: 0 0 10px 10px;"></label>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; font-size: 0.8rem; margin-bottom: 10px;">
+        <label><input type="checkbox" id="pass-upper" checked> Upper</label>
+        <label><input type="checkbox" id="pass-num" checked> Numbers</label>
+        <label><input type="checkbox" id="pass-sym"> Symbols</label>
+      </div>
+      <button id="pass-gen-btn">Generate</button>
+      <pre class="result" id="pass-result">Password will appear here.</pre>
+    </section>
+
+    <section class="tool-card">
+      <h3>Stopwatch</h3>
+      <div id="stopwatch-display" style="font-size: 2rem; font-family: monospace; text-align: center; margin-bottom: 10px;">00:00:00</div>
+      <div style="display:flex; gap:8px;">
+        <button id="sw-start">Start</button>
+        <button id="sw-stop">Stop</button>
+        <button id="sw-reset">Reset</button>
+      </div>
+    </section>
+
+    <section class="tool-card">
+      <h3>BMI Calculator</h3>
+      <input type="number" id="bmi-weight" placeholder="Weight (kg)">
+      <input type="number" id="bmi-height" placeholder="Height (cm)">
+      <button id="bmi-calc-btn">Calculate BMI</button>
+      <pre class="result" id="bmi-result">Result will appear here.</pre>
+    </section>
+
+    <section class="tool-card">
+      <h3>Temp Converter</h3>
+      <input type="number" id="temp-input" placeholder="Value">
+      <select id="temp-unit">
+        <option value="c">Celsius to Fahrenheit</option>
+        <option value="f">Fahrenheit to Celsius</option>
+      </select>
+      <button id="temp-convert-btn">Convert</button>
+      <pre class="result" id="temp-result">Result will appear here.</pre>
     </section>
 
   </div>
 </main>
 
 <script>
-  // JSON Formatter
-  const jsonInput = document.getElementById('json-input');
-  const jsonResult = document.getElementById('json-result');
-  document.getElementById('json-format-btn').addEventListener('click', () => {
-    try {
-      const obj = JSON.parse(jsonInput.value);
-      jsonResult.textContent = JSON.stringify(obj, null, 2);
-    } catch(e) {
-      jsonResult.textContent = 'Invalid JSON: ' + e.message;
+  // JSON
+  document.getElementById('json-format-btn').onclick = () => {
+    try { document.getElementById('json-result').textContent = JSON.stringify(JSON.parse(document.getElementById('json-input').value), null, 2); }
+    catch(e) { document.getElementById('json-result').textContent = "Error: " + e.message; }
+  };
+  document.getElementById('json-minify-btn').onclick = () => {
+    try { document.getElementById('json-result').textContent = JSON.stringify(JSON.parse(document.getElementById('json-input').value)); }
+    catch(e) { document.getElementById('json-result').textContent = "Error: " + e.message; }
+  };
+
+  // Base64
+  document.getElementById('b64-encode-btn').onclick = () => { document.getElementById('b64-result').textContent = btoa(document.getElementById('b64-input').value); };
+  document.getElementById('b64-decode-btn').onclick = () => { try { document.getElementById('b64-result').textContent = atob(document.getElementById('b64-input').value); } catch(e) { document.getElementById('b64-result').textContent = "Invalid Base64"; } };
+
+  // Calculator
+  const calcDisp = document.getElementById('calc-display');
+  document.getElementById('calc-buttons').onclick = (e) => {
+    if(!e.target.matches('button')) return;
+    const val = e.target.dataset.value;
+    if(e.target.id === 'calc-clear') calcDisp.value = '';
+    else if(e.target.id === 'calc-equals') { try { calcDisp.value = eval(calcDisp.value); } catch { calcDisp.value = 'Error'; } }
+    else calcDisp.value += val;
+  };
+
+  // Palette Generator
+  const genPalette = () => {
+    const container = document.getElementById('palette-container');
+    const result = document.getElementById('palette-result');
+    container.innerHTML = '';
+    let codes = [];
+    for(let i=0; i<4; i++) {
+      const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+      codes.push(hex);
+      const div = document.createElement('div');
+      div.className = 'palette-box';
+      div.style.backgroundColor = hex;
+      div.onclick = () => { navigator.clipboard.writeText(hex); alert('Copied: ' + hex); };
+      container.appendChild(div);
     }
-  });
-  document.getElementById('json-minify-btn').addEventListener('click', () => {
-    try {
-      const obj = JSON.parse(jsonInput.value);
-      jsonResult.textContent = JSON.stringify(obj);
-    } catch(e) {
-      jsonResult.textContent = 'Invalid JSON: ' + e.message;
+    result.textContent = codes.join(' | ');
+  };
+  document.getElementById('palette-gen-btn').onclick = genPalette;
+  genPalette();
+
+  // Word Counter
+  document.getElementById('counter-input').oninput = (e) => {
+    const text = e.target.value.trim();
+    const chars = text.length;
+    const words = text ? text.split(/\s+/).length : 0;
+    document.getElementById('counter-result').textContent = `Characters: ${chars} | Words: ${words}`;
+  };
+
+  // Password
+  document.getElementById('pass-gen-btn').onclick = () => {
+    let charset = "abcdefghijklmnopqrstuvwxyz";
+    if(document.getElementById('pass-upper').checked) charset += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    if(document.getElementById('pass-num').checked) charset += "0123456789";
+    if(document.getElementById('pass-sym').checked) charset += "!@#$%^&*()_+";
+    let retVal = "";
+    const len = document.getElementById('pass-length').value;
+    for (let i = 0; i < len; ++i) { retVal += charset.charAt(Math.floor(Math.random() * charset.length)); }
+    document.getElementById('pass-result').textContent = retVal;
+  };
+
+  // Stopwatch
+  let swInterval;
+  let seconds = 0;
+  document.getElementById('sw-start').onclick = () => {
+    clearInterval(swInterval);
+    swInterval = setInterval(() => {
+      seconds++;
+      let hrs = Math.floor(seconds / 3600);
+      let mins = Math.floor((seconds - (hrs * 3600)) / 60);
+      let secs = seconds % 60;
+      document.getElementById('stopwatch-display').textContent = 
+        `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }, 1000);
+  };
+  document.getElementById('sw-stop').onclick = () => clearInterval(swInterval);
+  document.getElementById('sw-reset').onclick = () => { seconds = 0; document.getElementById('stopwatch-display').textContent = "00:00:00"; clearInterval(swInterval); };
+
+  // BMI
+  document.getElementById('bmi-calc-btn').onclick = () => {
+    const w = parseFloat(document.getElementById('bmi-weight').value);
+    const h = parseFloat(document.getElementById('bmi-height').value) / 100;
+    if(w > 0 && h > 0) {
+      const bmi = (w / (h * h)).toFixed(2);
+      document.getElementById('bmi-result').textContent = `BMI: ${bmi}`;
     }
-  });
+  };
 
-  // Base64 Encoder / Decoder
-  const b64Input = document.getElementById('b64-input');
-  const b64Result = document.getElementById('b64-result');
-  document.getElementById('b64-encode-btn').addEventListener('click', () => {
-    try {
-      b64Result.textContent = btoa(unescape(encodeURIComponent(b64Input.value)));
-    } catch(e) {
-      b64Result.textContent = 'Encoding error: ' + e.message;
-    }
-  });
-  document.getElementById('b64-decode-btn').addEventListener('click', () => {
-    try {
-      b64Result.textContent = decodeURIComponent(escape(atob(b64Input.value)));
-    } catch(e) {
-      b64Result.textContent = 'Decoding error: ' + e.message;
-    }
-  });
-
-  // UUID v4 Generator
-  const uuidResult = document.getElementById('uuid-result');
-  document.getElementById('uuid-gen-btn').addEventListener('click', () => {
-    if(window.crypto && crypto.randomUUID) {
-      uuidResult.textContent = crypto.randomUUID();
-    } else {
-      // fallback
-      uuidResult.textContent = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random()*16|0;
-        const v = c === 'x' ? r : (r&0x3|0x8);
-        return v.toString(16);
-      });
-    }
-  });
-</script>
-
-<section class="tool-card" role="listitem" aria-labelledby="calc-title">
-  <h3 id="calc-title">Basic Calculator</h3>
-  <input type="text" id="calc-display" readonly placeholder="0" />
-  <div id="calc-buttons">
-    <button type="button" data-value="7">7</button>
-    <button type="button" data-value="8">8</button>
-    <button type="button" data-value="9">9</button>
-    <button type="button" data-value="/">÷</button>
-    <button type="button" data-value="4">4</button>
-    <button type="button" data-value="5">5</button>
-    <button type="button" data-value="6">6</button>
-    <button type="button" data-value="*">×</button>
-    <button type="button" data-value="1">1</button>
-    <button type="button" data-value="2">2</button>
-    <button type="button" data-value="3">3</button>
-    <button type="button" data-value="-">−</button>
-    <button type="button" data-value="0">0</button>
-    <button type="button" data-value=".">.</button>
-    <button type="button" id="calc-clear">C</button>
-    <button type="button" data-value="+">+</button>
-    <button type="button" id="calc-equals" style="grid-column: span 4;">=</button>
-  </div>
-</section>
-
-<style>
-  #calc-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-
-#calc-buttons button {
-  padding: 12px;
-  font-size: 1.2rem;
-  border-radius: 8px;
-  border: none;
-  background: var(--accent);
-  color: #004d4d;
-  cursor: pointer;
-  font-weight: 700;
-  transition: background-color 0.3s ease;
-}
-
-#calc-buttons button:hover {
-  background: var(--brand);
-}
-#calc-display {
-  width: 100%;
-  padding: 12px;
-  font-size: 1.5rem;
-  margin-bottom: 12px;
-  border-radius: 10px;
-  border: none;
-  background: rgba(255 255 255 / 0.15);
-  color: var(--text-light);
-  font-family: monospace, monospace;
-  text-align: right;
-}
-#calc-display::placeholder {
-  color: var(--text-muted);
-}
-
-</style>
-
-<script>const calcDisplay = document.getElementById('calc-display');
-const calcButtons = document.getElementById('calc-buttons');
-
-calcButtons.addEventListener('click', e => {
-  if (!e.target.matches('button')) return;
-  const btn = e.target;
-  const val = btn.getAttribute('data-value');
-
-  if (btn.id === 'calc-clear') {
-    calcDisplay.value = '';
-    return;
-  }
-  if (btn.id === 'calc-equals') {
-    try {
-      calcDisplay.value = eval(calcDisplay.value) || '';
-    } catch {
-      calcDisplay.value = 'Error';
-    }
-    return;
-  }
-  calcDisplay.value += val;
-});
-</script>
-
-<section class="tool-card" role="listitem" aria-labelledby="temp-title">
-  <h3 id="temp-title">Temperature Converter</h3>
-  <input type="number" id="temp-input" placeholder="Enter temperature" />
-  <select id="temp-unit">
-    <option value="c">Celsius to Fahrenheit</option>
-    <option value="f">Fahrenheit to Celsius</option>
-  </select>
-  <button id="temp-convert-btn" type="button">Convert</button>
-  <pre class="result" id="temp-result" aria-live="polite" aria-atomic="true">Result will appear here.</pre>
-</section>
-
-<script>document.getElementById('temp-convert-btn').addEventListener('click', () => {
-  const input = parseFloat(document.getElementById('temp-input').value);
-  const unit = document.getElementById('temp-unit').value;
-  const resultEl = document.getElementById('temp-result');
-
-  if (isNaN(input)) {
-    resultEl.textContent = 'Please enter a valid number.';
-    return;
-  }
-
-  let result;
-  if (unit === 'c') {
-    result = (input * 9/5) + 32;
-    resultEl.textContent = `${input}°C = ${result.toFixed(2)}°F`;
-  } else {
-    result = (input - 32) * 5/9;
-    resultEl.textContent = `${input}°F = ${result.toFixed(2)}°C`;
-  }
-});
-</script>
-
-<section class="tool-card" role="listitem" aria-labelledby="loan-title">
-  <h3 id="loan-title">Loan Calculator</h3>
-  <label for="loan-amount">Loan Amount ($):</label>
-  <input type="number" id="loan-amount" placeholder="e.g. 10000" />
-  <label for="loan-rate">Annual Interest Rate (%):</label>
-  <input type="number" id="loan-rate" step="0.01" placeholder="e.g. 5" />
-  <label for="loan-years">Loan Term (years):</label>
-  <input type="number" id="loan-years" placeholder="e.g. 5" />
-  <button id="loan-calc-btn" type="button">Calculate</button>
-  <pre class="result" id="loan-result" aria-live="polite" aria-atomic="true">Monthly payment will appear here.</pre>
-</section>
-
-<script>document.getElementById('loan-calc-btn').addEventListener('click', () => {
-  const amount = parseFloat(document.getElementById('loan-amount').value);
-  const annualRate = parseFloat(document.getElementById('loan-rate').value);
-  const years = parseFloat(document.getElementById('loan-years').value);
-  const resultEl = document.getElementById('loan-result');
-
-  if (isNaN(amount) || isNaN(annualRate) || isNaN(years) || amount <= 0 || years <= 0) {
-    resultEl.textContent = 'Please enter valid positive numbers.';
-    return;
-  }
-
-  const monthlyRate = annualRate / 100 / 12;
-  const n = years * 12;
-  const monthlyPayment = (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -n));
-
-  resultEl.textContent = `Monthly Payment: $${monthlyPayment.toFixed(2)}`;
-});
-</script>
-
-<section class="tool-card" role="listitem" aria-labelledby="bmi-title">
-  <h3 id="bmi-title">BMI Calculator</h3>
-  <label for="bmi-weight">Weight (kg):</label>
-  <input type="number" id="bmi-weight" placeholder="e.g. 70" />
-  <label for="bmi-height">Height (cm):</label>
-  <input type="number" id="bmi-height" placeholder="e.g. 170" />
-  <button id="bmi-calc-btn" type="button">Calculate BMI</button>
-  <pre class="result" id="bmi-result" aria-live="polite" aria-atomic="true">Your BMI will appear here.</pre>
-</section>
-
-<script>
-  document.getElementById('bmi-calc-btn').addEventListener('click', () => {
-  const weight = parseFloat(document.getElementById('bmi-weight').value);
-  const heightCm = parseFloat(document.getElementById('bmi-height').value);
-  const resultEl = document.getElementById('bmi-result');
-
-  if (isNaN(weight) || isNaN(heightCm) || weight <= 0 || heightCm <= 0) {
-    resultEl.textContent = 'Please enter valid positive numbers.';
-    return;
-  }
-
-  const heightM = heightCm / 100;
-  const bmi = weight / (heightM * heightM);
-  resultEl.textContent = `Your BMI is ${bmi.toFixed(2)} (${bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese'})`;
-});
-
-</script>
-
-<section class="tool-card" role="listitem" aria-labelledby="pass-title">
-  <h3 id="pass-title">Password Generator</h3>
-  <label for="pass-length">Length:</label>
-  <input type="number" id="pass-length" min="4" max="64" value="12" />
-  <label><input type="checkbox" id="pass-uppercase" checked /> Include Uppercase</label>
-  <label><input type="checkbox" id="pass-lowercase" checked /> Include Lowercase</label>
-  <label><input type="checkbox" id="pass-numbers" checked /> Include Numbers</label>
-  <label><input type="checkbox" id="pass-symbols" /> Include Symbols</label>
-  <button id="pass-gen-btn" type="button">Generate Password</button>
-  <pre class="result" id="pass-result" aria-live="polite" aria-atomic="true">Generated password will appear here.</pre>
-</section>
-
-<script>
-  document.getElementById('pass-gen-btn').addEventListener('click', () => {
-  const length = parseInt(document.getElementById('pass-length').value, 10);
-  const includeUpper = document.getElementById('pass-uppercase').checked;
-  const includeLower = document.getElementById('pass-lowercase').checked;
-  const includeNumbers = document.getElementById('pass-numbers').checked;
-  const includeSymbols = document.getElementById('pass-symbols').checked;
-  const resultEl = document.getElementById('pass-result');
-
-  if (isNaN(length) || length < 4 || length > 64) {
-    resultEl.textContent = 'Length must be between 4 and 64.';
-    return;
-  }
-
-  let charset = '';
-  if (includeUpper) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  if (includeLower) charset += 'abcdefghijklmnopqrstuvwxyz';
-  if (includeNumbers) charset += '0123456789';
-  if (includeSymbols) charset += '!@#$%^&*()-_=+[]{}|;:,.<>?';
-
-  if (!charset) {
-    resultEl.textContent = 'Select at least one character type.';
-    return;
-  }
-
-  let password = '';
-  for (let i = 0; i < length; i++) {
-    password += charset.charAt(Math.floor(Math.random() * charset.length));
-  }
-  resultEl.textContent = password;
-});
-
-</script>
-
-<section class="tool-card" role="listitem" aria-labelledby="case-title">
-  <h3 id="case-title">Text Case Converter</h3>
-  <textarea id="case-input" rows="4" placeholder="Enter text here..."></textarea>
-  <button id="case-upper-btn" type="button">UPPERCASE</button>
-  <button id="case-lower-btn" type="button">lowercase</button>
-  <button id="case-title-btn" type="button">Title Case</button>
-  <pre class="result" id="case-result" aria-live="polite" aria-atomic="true">Converted text will appear here.</pre>
-</section>
-
-<script>const caseInput = document.getElementById('case-input');
-const caseResult = document.getElementById('case-result');
-
-document.getElementById('case-upper-btn').addEventListener('click', () => {
-  caseResult.textContent = caseInput.value.toUpperCase();
-});
-document.getElementById('case-lower-btn').addEventListener('click', () => {
-  caseResult.textContent = caseInput.value.toLowerCase();
-});
-document.getElementById('case-title-btn').addEventListener('click', () => {
-  const titleCase = caseInput.value.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-  caseResult.textContent = titleCase;
-});
-</script>
-
-<iframe src="chatbot.html" 
-        title="OpenRouter AI Chatbot" 
-        width="100%" 
-        height="600" 
-        style="border:none; border-radius:16px; box-shadow: 0 12px 30px rgba(0,0,0,0.25);"
-        allow="clipboard-write"
-        loading="lazy">
-</iframe>
-
-<script type="module">
-  import { OpenRouter } from '@openrouter/sdk';
-
-const openRouter = new OpenRouter({
-  apiKey: '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',
-  defaultHeaders: {
-    'HTTP-Referer': 'https://best-of-all-network.netlify.app/tools',  // Optional but recommended
-    'X-Title': 'Best Of All Network',                   // Optional but recommended
-  },
-});
-
-async function chatWithAI(prompt) {
-  try {
-    const completion = await openRouter.chat.send({
-      model: 'openai/gpt-4o-mini',  // latest GPT-4o-mini model
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-      stream: false,
-    });
-
-    console.log(completion.choices[0].message.content);
-    return completion.choices[0].message.content;
-  } catch (error) {
-    console.error('OpenRouter SDK error:', error);
-    throw error;
-  }
-}
-
-// Example usage:
-chatWithAI('What is the meaning of life?').then(console.log);
-
+  // Temp
+  document.getElementById('temp-convert-btn').onclick = () => {
+    const val = parseFloat(document.getElementById('temp-input').value);
+    const unit = document.getElementById('temp-unit').value;
+    if(unit === 'c') document.getElementById('temp-result').textContent = (val * 9/5 + 32).toFixed(2) + " °F";
+    else document.getElementById('temp-result').textContent = ((val - 32) * 5/9).toFixed(2) + " °C";
+  };
 </script>
 
 </body>
