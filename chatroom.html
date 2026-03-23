@@ -1,264 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Simple Chatrooms</title>
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"
-          integrity="sha384-+7s7p0pQ+0pQx0xqgXzq7p7u5q5u5q5u5q5u5q5u5q5u5q5u5q5u5q5u5q5u5"
-          crossorigin="anonymous"></script>
-  <style>
-    body { font-family: system-ui, sans-serif; margin: 0; padding: 0; background:#111; color:#eee; }
-    header { padding: 10px 16px; background:#222; display:flex; justify-content:space-between; align-items:center; }
-    main { display:flex; gap:12px; padding:12px; box-sizing:border-box; }
-    .column { flex:1; min-width:0; background:#181818; border-radius:8px; padding:10px; display:flex; flex-direction:column; }
-    h2 { margin:0 0 8px; font-size:16px; }
-    .messages { flex:1; overflow-y:auto; border:1px solid #333; border-radius:6px; padding:6px; font-size:14px; background:#000; }
-    .msg { margin-bottom:4px; }
-    .msg span.user { font-weight:bold; color:#4ea1ff; }
-    .msg span.room { color:#888; font-size:11px; margin-left:4px; }
-    form { display:flex; gap:6px; margin-top:8px; }
-    input, button { font:inherit; }
-    input[type="text"] { flex:1; padding:6px 8px; border-radius:4px; border:1px solid #444; background:#111; color:#eee; }
-    button { padding:6px 10px; border-radius:4px; border:none; background:#4ea1ff; color:#000; cursor:pointer; }
-    button:disabled { opacity:.5; cursor:default; }
-    .small { font-size:12px; color:#aaa; margin-top:4px; }
-    .row { display:flex; gap:6px; margin-bottom:6px; }
-    .row input { flex:1; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Chatroom</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ccc;
+        }
+        #message-input {
+            display: flex;
+            padding: 10px;
+            background: #fff;
+            border-top: 1px solid #ccc;
+        }
+        #message-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        #message-input button {
+            padding: 10px;
+        }
+        #room-panel, #signup-panel {
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-<header>
-  <div><strong>Chatrooms</strong> — Global + Custom Rooms</div>
-  <div>
-    Name:
-    <input id="username" type="text" placeholder="Your name" style="width:140px;">
-    <button id="connectBtn">Connect</button>
-  </div>
-</header>
-
-<main>
-  <!-- Global channel -->
-  <section class="column">
-    <h2>Global Channel</h2>
-    <div class="small">Everyone connected sees these messages.</div>
-    <div id="globalMessages" class="messages"></div>
-    <form id="globalForm">
-      <input id="globalInput" type="text" placeholder="Message in #global" autocomplete="off">
-      <button type="submit">Send</button>
-    </form>
-  </section>
-
-  <!-- Custom room with invite code -->
-  <section class="column">
-    <h2>Custom Room</h2>
-    <div class="small">
-      Create a room (auto invite code) or join an existing one.
+    <div id="chat-container">
+        <div id="messages"></div>
+        <div id="message-input">
+            <input type="text" id="message" placeholder="Type a message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        <div id="signup-panel">
+            <input type="text" id="username" placeholder="Enter your username" />
+            <button onclick="signUp()">Sign Up</button>
+            <p id="signup-message"></p>
+        </div>
+        <div id="room-panel">
+            <input type="text" id="room-code" placeholder="Enter room code" />
+            <button onclick="joinRoom()">Join Room</button>
+            <button onclick="createRoom()">Create Room</button>
+            <p id="room-message"></p>
+        </div>
     </div>
 
-    <div class="row">
-      <input id="createRoomName" type="text" placeholder="New room name">
-      <button id="createRoomBtn">Create</button>
-    </div>
-    <div class="row">
-      <input id="joinCodeInput" type="text" placeholder="Invite code to join">
-      <button id="joinRoomBtn">Join</button>
-    </div>
-    <div class="small">
-      Current room: <span id="currentRoom">none</span><br>
-      Invite code: <span id="currentCode">—</span>
-    </div>
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('message');
+        const roomCodeInput = document.getElementById('room-code');
+        const roomMessage = document.getElementById('room-message');
+        const usernameInput = document.getElementById('username');
+        const signupMessage = document.getElementById('signup-message');
 
-    <div id="roomMessages" class="messages" style="margin-top:6px;"></div>
-    <form id="roomForm">
-      <input id="roomInput" type="text" placeholder="Message in custom room" autocomplete="off">
-      <button type="submit">Send</button>
-    </form>
-  </section>
-</main>
+        let currentRoom = 'global';
+        const rooms = {};
+        let username = '';
 
-<script>
-  // ---- CLIENT SETUP ----
-  const usernameInput = document.getElementById('username');
-  const connectBtn = document.getElementById('connectBtn');
+        function updateMessages(msg) {
+            const msgElement = document.createElement('div');
+            msgElement.textContent = msg;
+            messagesDiv.appendChild(msgElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
 
-  const globalMessages = document.getElementById('globalMessages');
-  const globalForm = document.getElementById('globalForm');
-  const globalInput = document.getElementById('globalInput');
+        function sendMessage() {
+            const message = messageInput.value;
+            if (message && username) {
+                updateMessages(`[${currentRoom}] ${username}: ${message}`);
+                messageInput.value = '';
+            } else {
+                alert('Please enter a message and ensure you are signed up.');
+            }
+        }
 
-  const createRoomName = document.getElementById('createRoomName');
-  const createRoomBtn = document.getElementById('createRoomBtn');
-  const joinCodeInput = document.getElementById('joinCodeInput');
-  const joinRoomBtn = document.getElementById('joinRoomBtn');
-  const currentRoomSpan = document.getElementById('currentRoom');
-  const currentCodeSpan = document.getElementById('currentCode');
-  const roomMessages = document.getElementById('roomMessages');
-  const roomForm = document.getElementById('roomForm');
-  const roomInput = document.getElementById('roomInput');
+        function signUp() {
+            const name = usernameInput.value.trim();
+            if (name) {
+                username = name;
+                signupMessage.textContent = `Signed up as: ${username}`;
+                usernameInput.value = '';
+            } else {
+                signupMessage.textContent = 'Please enter a valid username.';
+            }
+        }
 
-  let socket = null;
-  let currentRoom = null;
-  let currentCode = null;
-  let username = null;
+        function createRoom() {
+            const roomCode = Math.random().toString(36).substring(2, 8);
+            rooms[roomCode] = [];
+            roomMessage.textContent = `Room created! Code: ${roomCode}`;
+        }
 
-  function appendMessage(container, data, roomLabel) {
-    const div = document.createElement('div');
-    div.className = 'msg';
-    const userSpan = document.createElement('span');
-    userSpan.className = 'user';
-    userSpan.textContent = data.user || 'anon';
-    const roomSpan = document.createElement('span');
-    roomSpan.className = 'room';
-    if (roomLabel) roomSpan.textContent = roomLabel;
-    const textSpan = document.createElement('span');
-    textSpan.textContent = ': ' + data.text;
-    div.appendChild(userSpan);
-    if (roomLabel) div.appendChild(roomSpan);
-    div.appendChild(textSpan);
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-  }
-
-  function setConnectedState(connected) {
-    connectBtn.textContent = connected ? 'Connected' : 'Connect';
-    connectBtn.disabled = connected;
-    usernameInput.disabled = connected;
-    globalInput.disabled = !connected;
-    roomInput.disabled = !connected;
-    createRoomBtn.disabled = !connected;
-    joinRoomBtn.disabled = !connected;
-  }
-
-  setConnectedState(false);
-
-  connectBtn.addEventListener('click', () => {
-    username = usernameInput.value.trim() || 'Guest-' + Math.floor(Math.random()*9999);
-    if (socket) socket.disconnect();
-    socket = io(); // assumes Socket.IO server on same origin
-
-    socket.on('connect', () => {
-      setConnectedState(true);
-      socket.emit('set-username', { user: username });
-    });
-
-    socket.on('disconnect', () => {
-      setConnectedState(false);
-    });
-
-    socket.on('global-message', (data) => {
-      appendMessage(globalMessages, data, '#global');
-    });
-
-    socket.on('room-message', (data) => {
-      appendMessage(roomMessages, data, '#' + (data.room || 'room'));
-    });
-
-    socket.on('room-joined', (data) => {
-      currentRoom = data.room;
-      currentCode = data.code;
-      currentRoomSpan.textContent = currentRoom;
-      currentCodeSpan.textContent = currentCode;
-      roomMessages.innerHTML = '';
-      appendMessage(roomMessages, { user: 'system', text: 'Joined room ' + currentRoom }, '#' + currentRoom);
-    });
-
-    socket.on('room-error', (data) => {
-      appendMessage(roomMessages, { user: 'system', text: 'Error: ' + data.error }, '#error');
-    });
-  });
-
-  globalForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (!socket || !socket.connected) return;
-    const text = globalInput.value.trim();
-    if (!text) return;
-    socket.emit('global-message', { text });
-    globalInput.value = '';
-  });
-
-  roomForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (!socket || !socket.connected || !currentRoom) return;
-    const text = roomInput.value.trim();
-    if (!text) return;
-    socket.emit('room-message', { room: currentRoom, text });
-    roomInput.value = '';
-  });
-
-  createRoomBtn.addEventListener('click', () => {
-    if (!socket || !socket.connected) return;
-    const name = createRoomName.value.trim() || ('room-' + Math.floor(Math.random()*9999));
-    socket.emit('create-room', { name });
-  });
-
-  joinRoomBtn.addEventListener('click', () => {
-    if (!socket || !socket.connected) return;
-    const code = joinCodeInput.value.trim();
-    if (!code) return;
-    socket.emit('join-room', { code });
-  });
-</script>
-
-<!--
-  Minimal Node.js + Socket.IO server (save separately as server.js):
-
-  const http = require('http');
-  const express = require('express');
-  const { Server } = require('socket.io');
-  const app = express();
-  const server = http.createServer(app);
-  const io = new Server(server);
-
-  app.use(express.static(__dirname)); // serve this HTML file
-
-  const roomsByCode = new Map(); // code -> { name, code }
-
-  function generateCode() {
-    return Math.random().toString(36).slice(2, 8).toUpperCase();
-  }
-
-  io.on('connection', (socket) => {
-    socket.data.username = 'anon';
-
-    socket.on('set-username', (data) => {
-      socket.data.username = data.user || 'anon';
-    });
-
-    socket.on('global-message', (data) => {
-      io.emit('global-message', {
-        user: socket.data.username,
-        text: data.text
-      });
-    });
-
-    socket.on('create-room', ({ name }) => {
-      const code = generateCode();
-      const room = { name, code };
-      roomsByCode.set(code, room);
-      socket.join(room.name);
-      socket.emit('room-joined', { room: room.name, code });
-    });
-
-    socket.on('join-room', ({ code }) => {
-      const room = roomsByCode.get(code);
-      if (!room) {
-        socket.emit('room-error', { error: 'Invalid invite code' });
-        return;
-      }
-      socket.join(room.name);
-      socket.emit('room-joined', { room: room.name, code: room.code });
-    });
-
-    socket.on('room-message', ({ room, text }) => {
-      if (!room) return;
-      io.to(room).emit('room-message', {
-        room,
-        user: socket.data.username,
-        text
-      });
-    });
-  });
-
-  server.listen(3000, () => console.log('Server on http://localhost:3000'));
--->
+        function joinRoom() {
+            const roomCode = roomCodeInput.value;
+            if (rooms[roomCode]) {
+                currentRoom = roomCode;
+                roomMessage.textContent = `Joined room: ${currentRoom}`;
+            } else {
+                roomMessage.textContent = 'Room does not exist.';
+            }
+            roomCodeInput.value = '';
+        }
+    </script>
 </body>
 </html>
