@@ -1,49 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><title>Deep Space Asteroids</title>
+    <meta charset="UTF-8"><title>Deep Space Hunter</title>
     <style>
-        body { margin: 0; background: #000 url('https://img.freepik.com/free-vector/night-ocean-landscape-with-full-moon-stars_107791-6675.jpg') no-repeat center center fixed; background-size: cover; overflow: hidden; }
-        canvas { display: block; }
-        #ui { position: absolute; top: 20px; left: 20px; color: #fff; font-family: 'Space Grotesk'; font-size: 1.2rem; text-shadow: 0 2px 4px #000; pointer-events: none; }
+        body { margin:0; background: #000 url('https://www.transparenttextures.com/patterns/stardust.png'); overflow:hidden; }
+        #s { position:absolute; color:#00ffea; font-family:sans-serif; top:10px; left:10px; }
     </style>
 </head>
 <body>
-    <div id="ui">Shields: Nominal | Score: <span id="s">0</span></div>
-    <canvas id="g"></canvas>
+    <div id="s">Score: 0 | WATCH OUT FOR RED HUNTERS</div>
+    <canvas id="c"></canvas>
     <script>
-        const c = document.getElementById('g'), ctx = c.getContext('2d');
-        const astTex = new Image(); astTex.src = 'https://opengameart.org/sites/default/files/asteroid_0.png';
-        let w, h, score = 0, roids = [], bullets = [], keys = {}, ship = {x:0, y:0, r:0, v:{x:0, y:0}};
-        function resize() { w=c.width=window.innerWidth; h=c.height=window.innerHeight; ship.x=w/2; ship.y=h/2; }
+        const canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
+        let w, h, ship = {x:0, y:0, r:0, vx:0, vy:0}, roids = [], bullets = [], keys = {};
+        function resize() { w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight; ship.x=w/2; ship.y=h/2; }
         resize();
-        function spawn() { roids.push({x:Math.random()*w, y:Math.random()*h, v:{x:Math.random()*2-1, y:Math.random()*2-1}, sz:30+Math.random()*30, ang:Math.random()*7}); }
-        for(let i=0; i<6; i++) spawn();
+        function spawn(isHunter) { 
+            roids.push({x:Math.random()*w, y:Math.random()*h, vx:Math.random()*2-1, vy:Math.random()*2-1, sz:25, hunter:isHunter}); 
+        }
+        for(let i=0; i<5; i++) spawn(i === 0);
         window.onkeydown = e => keys[e.code] = true;
-        window.onkeyup = e => { keys[e.code]=false; if(e.code=='Space') bullets.push({x:ship.x, y:ship.y, v:{x:Math.cos(ship.r)*6, y:Math.sin(ship.r)*6}, t:50}); };
-        function loop() {
+        window.onkeyup = e => { keys[e.code]=false; if(e.code=='Space') bullets.push({x:ship.x, y:ship.y, vx:Math.cos(ship.r)*5, vy:Math.sin(ship.r)*5, t:60}); };
+        function update() {
             ctx.clearRect(0,0,w,h);
-            if(keys['ArrowLeft']) ship.r-=0.08; if(keys['ArrowRight']) ship.r+=0.08;
-            if(keys['ArrowUp']) { ship.v.x+=Math.cos(ship.r)*0.15; ship.v.y+=Math.sin(ship.r)*0.15; }
-            ship.x=(ship.x+ship.v.x+w)%w; ship.y=(ship.y+ship.v.y+h)%h;
-            ctx.save(); ctx.translate(ship.x, ship.y); ctx.rotate(ship.r);
-            ctx.strokeStyle='#00c2ff'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(15,0); ctx.lineTo(-10,10); ctx.lineTo(-10,-10); ctx.closePath(); ctx.stroke(); ctx.restore();
-            bullets.forEach((b, i) => {
-                b.x=(b.x+b.v.x+w)%w; b.y=(b.y+b.v.y+h)%h; b.t--;
-                ctx.fillStyle='#fff'; ctx.fillRect(b.x, b.y, 3, 3);
-                if(b.t<0) bullets.splice(i,1);
-            });
+            if(keys['ArrowLeft']) ship.r-=0.1; if(keys['ArrowRight']) ship.r+=0.1;
+            if(keys['ArrowUp']) { ship.vx+=Math.cos(ship.r)*0.1; ship.vy+=Math.sin(ship.r)*0.1; }
+            ship.x=(ship.x+ship.vx+w)%w; ship.y=(ship.y+ship.vy+h)%h;
+            ctx.strokeStyle='#00ffea'; ctx.beginPath(); ctx.arc(ship.x, ship.y, 10, ship.r-2.5, ship.r+2.5); ctx.stroke();
             roids.forEach((r, i) => {
-                r.x=(r.x+r.v.x+w)%w; r.y=(r.y+r.v.y+h)%h; r.ang+=0.01;
-                ctx.save(); ctx.translate(r.x, r.y); ctx.rotate(r.ang);
-                ctx.drawImage(astTex, -r.sz, -r.sz, r.sz*2, r.sz*2); ctx.restore();
-                bullets.forEach((b, bi) => {
-                    if(Math.hypot(r.x-b.x, r.y-b.y) < r.sz) { score+=50; roids.splice(i,1); bullets.splice(bi,1); spawn(); document.getElementById('s').innerText=score; }
+                if(r.hunter) { r.vx += (ship.x - r.x)*0.001; r.vy += (ship.y - r.y)*0.001; } // AI Logic: Follow Player
+                r.x=(r.x+r.vx+w)%w; r.y=(r.y+r.vy+h)%h;
+                ctx.strokeStyle = r.hunter ? 'red' : 'white';
+                ctx.beginPath(); ctx.arc(r.x, r.y, r.sz, 0, 7); ctx.stroke();
+            });
+            bullets.forEach((b, i) => {
+                b.x+=b.vx; b.y+=b.vy; b.t--;
+                ctx.fillStyle='white'; ctx.fillRect(b.x, b.y, 2, 2);
+                roids.forEach((r, ri) => {
+                    if(Math.hypot(b.x-r.x, b.y-r.y) < r.sz) { roids.splice(ri, 1); spawn(r.hunter); bullets.splice(i, 1); }
                 });
             });
-            requestAnimationFrame(loop);
+            requestAnimationFrame(update);
         }
-        loop();
+        update();
     </script>
 </body>
 </html>

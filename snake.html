@@ -1,38 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><title>Snake Jungle</title>
+    <meta charset="UTF-8"><title>Snake Bot • Pro</title>
     <style>
-        body { background: #111; display: flex; flex-direction: column; align-items: center; color: white; font-family: sans-serif; }
-        canvas { border: 10px solid #2e7d32; box-shadow: 0 0 20px rgba(0,0,0,0.8); background: url('https://www.transparenttextures.com/patterns/dark-matter.png'); }
+        body { background: #111; display: flex; flex-direction: column; align-items: center; color: #00ffea; font-family: sans-serif; }
+        canvas { border: 5px solid #00ffea; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); box-shadow: 0 0 20px #00ffea; }
     </style>
 </head>
 <body>
-    <h1>Score: <span id="s">0</span></h1>
+    <h1>SNAKE BOT <small>(Press 'B' to toggle AI)</small></h1>
     <canvas id="g" width="400" height="400"></canvas>
     <script>
         const c = document.getElementById('g'), ctx = c.getContext('2d');
-        const grass = new Image(); grass.src = 'https://img.freepik.com/free-photo/green-grass-texture_1249-15.jpg';
-        let x=10, y=10, xv=0, yv=0, tx=15, ty=15, gs=20, tc=20, trail=[], tail=5, score=0;
-        function game() {
-            x+=xv; y+=yv; if(x<0)x=tc-1; if(x>tc-1)x=0; if(y<0)y=tc-1; if(y>tc-1)y=0;
-            ctx.fillStyle = "#1a1a1a"; ctx.fillRect(0,0,c.width,c.height);
-            ctx.strokeStyle = "#2e7d32";
-            for(let i=0; i<trail.length; i++) {
-                ctx.fillStyle = i == trail.length-1 ? "#4CAF50" : "#2E7D32";
-                ctx.fillRect(trail[i].x*gs, trail[i].y*gs, gs-1, gs-1);
-                if(trail[i].x==x && trail[i].y==y && (xv||yv)) { tail=5; score=0; }
+        let x=10, y=10, xv=0, yv=0, ax=15, ay=15, gs=20, tc=20, trail=[], tail=5, auto=false;
+        window.onkeydown = e => {
+            if(e.key=='b') auto = !auto;
+            if(!auto) {
+                if(e.key=="ArrowLeft") {xv=-1; yv=0} if(e.key=="ArrowUp") {xv=0; yv=-1}
+                if(e.key=="ArrowRight") {xv=1; yv=0} if(e.key=="ArrowDown") {xv=0; yv=1}
             }
-            trail.push({x:x,y:y}); while(trail.length>tail) trail.shift();
-            if(tx==x && ty==y) { tail++; score++; tx=Math.floor(Math.random()*tc); ty=Math.floor(Math.random()*tc); }
-            ctx.fillStyle = "red"; ctx.beginPath(); ctx.arc(tx*gs+gs/2, ty*gs+gs/2, gs/2-2, 0, 7); ctx.fill();
-            document.getElementById('s').innerText = score;
-        }
-        window.onkeydown = e => { 
-            if(e.key=="ArrowLeft" && xv!=1) {xv=-1; yv=0} if(e.key=="ArrowUp" && yv!=1) {xv=0; yv=-1}
-            if(e.key=="ArrowRight" && xv!=-1) {xv=1; yv=0} if(e.key=="ArrowDown" && yv!=-1) {xv=0; yv=1}
         };
-        setInterval(game, 100);
+        function step() {
+            if(auto) {
+                if(x < ax) {xv=1; yv=0} else if(x > ax) {xv=-1; yv=0}
+                else if(y < ay) {xv=0; yv=1} else if(y > ay) {xv=0; yv=-1}
+            }
+            x+=xv; y+=yv; if(x<0)x=tc-1; if(x>tc-1)x=0; if(y<0)y=tc-1; if(y>tc-1)y=0;
+            ctx.fillStyle="black"; ctx.fillRect(0,0,c.width,c.height);
+            ctx.fillStyle="#00ffea";
+            trail.forEach(t => ctx.fillRect(t.x*gs, t.y*gs, gs-2, gs-2));
+            trail.push({x:x,y:y}); while(trail.length>tail) trail.shift();
+            if(ax==x && ay==y) { tail++; ax=Math.floor(Math.random()*tc); ay=Math.floor(Math.random()*tc); }
+            ctx.fillStyle="red"; ctx.fillRect(ax*gs, ay*gs, gs-2, gs-2);
+        }
+        setInterval(step, 100);
     </script>
 </body>
 </html>

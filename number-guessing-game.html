@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Neural Guesser</title>
+    <style>
+        body { background: #000; color: #00ffea; text-align: center; font-family: monospace; padding-top: 100px; }
+        input { background: #222; border: 1px solid #00ffea; color: #00ffea; padding: 15px; font-size: 1.5rem; }
+    </style>
+</head>
+<body>
+    <h1>NEURAL DATA BREACH</h1>
+    <p>Predict the 7-bit key (1-100)</p>
+    <input type="number" id="in">
+    <button onclick="guess()" style="padding:15px; background:#00ffea; cursor:pointer">SUBMIT</button>
+    <h2 id="out">...Waiting for input...</h2>
+    <script>
+        let target = Math.floor(Math.random()*100)+1, lastDist = null;
+        function guess() {
+            let v = document.getElementById('in').value;
+            let dist = Math.abs(v - target);
+            if(v == target) { document.getElementById('out').innerText = "ACCESS GRANTED!"; target = Math.floor(Math.random()*100)+1; lastDist=null; }
+            else {
+                let hint = v > target ? "TOO HIGH" : "TOO LOW";
+                if(lastDist !== null) hint += (dist < lastDist ? " (WARMER)" : " (COLDER)");
+                document.getElementById('out').innerText = hint;
+                lastDist = dist;
+            }
+        }
+    </script>
+</body>
+</html>
