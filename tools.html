@@ -157,13 +157,13 @@
     </section>
 
     <section class="tool-card">
-      <h3>Base64 Encoder</h3>
-      <textarea id="b64-input" rows="3" placeholder="Enter text..."></textarea>
+      <h3>Binary ↔ Text</h3>
+      <textarea id="bin-input" rows="3" placeholder="Enter text or binary..."></textarea>
       <div style="display:flex; gap:8px;">
-        <button id="b64-encode-btn">Encode</button>
-        <button id="b64-decode-btn">Decode</button>
+        <button id="bin-encode-btn">To Binary</button>
+        <button id="bin-decode-btn">To Text</button>
       </div>
-      <pre class="result" id="b64-result">Output will appear here.</pre>
+      <pre class="result" id="bin-result">Result will appear here.</pre>
     </section>
 
     <section class="tool-card">
@@ -179,16 +179,42 @@
     </section>
 
     <section class="tool-card">
+      <h3>Tip Calculator</h3>
+      <input type="number" id="tip-bill" placeholder="Bill Amount ($)">
+      <input type="number" id="tip-percent" placeholder="Tip Percent (%)" value="15">
+      <button id="tip-calc-btn">Calculate Total</button>
+      <pre class="result" id="tip-result">Result will appear here.</pre>
+    </section>
+
+    <section class="tool-card">
+      <h3>Morse Code Converter</h3>
+      <textarea id="morse-input" rows="3" placeholder="Enter text or morse..."></textarea>
+      <div style="display:flex; gap:8px;">
+        <button id="morse-encode-btn">To Morse</button>
+        <button id="morse-decode-btn">From Morse</button>
+      </div>
+      <pre class="result" id="morse-result">Result will appear here.</pre>
+    </section>
+
+    <section class="tool-card">
+      <h3>List Randomizer</h3>
+      <textarea id="list-input" rows="3" placeholder="Enter items separated by lines..."></textarea>
+      <button id="list-shuffle-btn">Shuffle List</button>
+      <pre class="result" id="list-result">Result will appear here.</pre>
+    </section>
+
+    <section class="tool-card">
+      <h3>Stats (Mean & SD)</h3>
+      <input type="text" id="stats-input" placeholder="Enter numbers (e.g. 10, 2, 35)">
+      <button id="stats-calc-btn">Analyze</button>
+      <pre class="result" id="stats-result">Result will appear here.</pre>
+    </section>
+
+    <section class="tool-card">
       <h3>Color Palette Generator</h3>
       <div id="palette-container" style="display:flex; gap:8px; margin-bottom:12px;"></div>
       <button id="palette-gen-btn">Generate Palette</button>
       <pre class="result" id="palette-result">Codes will appear here.</pre>
-    </section>
-
-    <section class="tool-card">
-      <h3>Word & Char Counter</h3>
-      <textarea id="counter-input" rows="4" placeholder="Start typing..."></textarea>
-      <pre class="result" id="counter-result">Characters: 0 | Words: 0</pre>
     </section>
 
     <section class="tool-card">
@@ -222,6 +248,12 @@
     </section>
 
     <section class="tool-card">
+      <h3>Word & Char Counter</h3>
+      <textarea id="counter-input" rows="4" placeholder="Start typing..."></textarea>
+      <pre class="result" id="counter-result">Characters: 0 | Words: 0</pre>
+    </section>
+
+    <section class="tool-card">
       <h3>Temp Converter</h3>
       <input type="number" id="temp-input" placeholder="Value">
       <select id="temp-unit">
@@ -230,6 +262,16 @@
       </select>
       <button id="temp-convert-btn">Convert</button>
       <pre class="result" id="temp-result">Result will appear here.</pre>
+    </section>
+
+    <section class="tool-card">
+      <h3>Base64 Encoder</h3>
+      <textarea id="b64-input" rows="3" placeholder="Enter text..."></textarea>
+      <div style="display:flex; gap:8px;">
+        <button id="b64-encode-btn">Encode</button>
+        <button id="b64-decode-btn">Decode</button>
+      </div>
+      <pre class="result" id="b64-result">Output will appear here.</pre>
     </section>
 
   </div>
@@ -246,11 +288,65 @@
     catch(e) { document.getElementById('json-result').textContent = "Error: " + e.message; }
   };
 
+  // Binary
+  document.getElementById('bin-encode-btn').onclick = () => {
+    const text = document.getElementById('bin-input').value;
+    document.getElementById('bin-result').textContent = text.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+  };
+  document.getElementById('bin-decode-btn').onclick = () => {
+    try {
+      const bin = document.getElementById('bin-input').value.replace(/\s/g, '');
+      const text = bin.match(/.{1,8}/g).map(byte => String.fromCharCode(parseInt(byte, 2))).join('');
+      document.getElementById('bin-result').textContent = text;
+    } catch { document.getElementById('bin-result').textContent = "Invalid Binary"; }
+  };
+
+  // Tip Calculator
+  document.getElementById('tip-calc-btn').onclick = () => {
+    const bill = parseFloat(document.getElementById('tip-bill').value);
+    const perc = parseFloat(document.getElementById('tip-percent').value);
+    if(bill > 0) {
+      const tip = bill * (perc / 100);
+      document.getElementById('tip-result').textContent = `Tip: $${tip.toFixed(2)}\nTotal: $${(bill + tip).toFixed(2)}`;
+    }
+  };
+
+  // Morse Code Map
+  const MORSE_MAP = {'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--', 'Z': '--..', '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.', '0': '-----', ' ': '/'};
+  document.getElementById('morse-encode-btn').onclick = () => {
+    const text = document.getElementById('morse-input').value.toUpperCase();
+    document.getElementById('morse-result').textContent = text.split('').map(c => MORSE_MAP[c] || '').join(' ');
+  };
+  document.getElementById('morse-decode-btn').onclick = () => {
+    const revMap = Object.fromEntries(Object.entries(MORSE_MAP).map(([k, v]) => [v, k]));
+    const code = document.getElementById('morse-input').value.split(' ');
+    document.getElementById('morse-result').textContent = code.map(c => revMap[c] || '').join('');
+  };
+
+  // List Randomizer
+  document.getElementById('list-shuffle-btn').onclick = () => {
+    let items = document.getElementById('list-input').value.split('\n').filter(i => i.trim());
+    for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [items[i], items[j]] = [items[j], items[i]];
+    }
+    document.getElementById('list-result').textContent = items.join('\n');
+  };
+
+  // Stats
+  document.getElementById('stats-calc-btn').onclick = () => {
+    const nums = document.getElementById('stats-input').value.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+    if(nums.length === 0) return;
+    const mean = nums.reduce((a, b) => a + b) / nums.length;
+    const sd = Math.sqrt(nums.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / nums.length);
+    document.getElementById('stats-result').textContent = `Count: ${nums.length}\nMean: ${mean.toFixed(2)}\nStd Dev: ${sd.toFixed(2)}`;
+  };
+
   // Base64
   document.getElementById('b64-encode-btn').onclick = () => { document.getElementById('b64-result').textContent = btoa(document.getElementById('b64-input').value); };
   document.getElementById('b64-decode-btn').onclick = () => { try { document.getElementById('b64-result').textContent = atob(document.getElementById('b64-input').value); } catch(e) { document.getElementById('b64-result').textContent = "Invalid Base64"; } };
 
-  // Calculator
+  // Calculator logic
   const calcDisp = document.getElementById('calc-display');
   document.getElementById('calc-buttons').onclick = (e) => {
     if(!e.target.matches('button')) return;
@@ -280,14 +376,6 @@
   document.getElementById('palette-gen-btn').onclick = genPalette;
   genPalette();
 
-  // Word Counter
-  document.getElementById('counter-input').oninput = (e) => {
-    const text = e.target.value.trim();
-    const chars = text.length;
-    const words = text ? text.split(/\s+/).length : 0;
-    document.getElementById('counter-result').textContent = `Characters: ${chars} | Words: ${words}`;
-  };
-
   // Password
   document.getElementById('pass-gen-btn').onclick = () => {
     let charset = "abcdefghijklmnopqrstuvwxyz";
@@ -301,40 +389,31 @@
   };
 
   // Stopwatch
-  let swInterval;
-  let seconds = 0;
+  let swInterval, seconds = 0;
   document.getElementById('sw-start').onclick = () => {
     clearInterval(swInterval);
     swInterval = setInterval(() => {
       seconds++;
-      let hrs = Math.floor(seconds / 3600);
-      let mins = Math.floor((seconds - (hrs * 3600)) / 60);
-      let secs = seconds % 60;
-      document.getElementById('stopwatch-display').textContent = 
-        `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      let hrs = Math.floor(seconds / 3600), mins = Math.floor((seconds % 3600) / 60), secs = seconds % 60;
+      document.getElementById('stopwatch-display').textContent = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }, 1000);
   };
   document.getElementById('sw-stop').onclick = () => clearInterval(swInterval);
   document.getElementById('sw-reset').onclick = () => { seconds = 0; document.getElementById('stopwatch-display').textContent = "00:00:00"; clearInterval(swInterval); };
 
-  // BMI
+  // BMI & Temp
   document.getElementById('bmi-calc-btn').onclick = () => {
-    const w = parseFloat(document.getElementById('bmi-weight').value);
-    const h = parseFloat(document.getElementById('bmi-height').value) / 100;
-    if(w > 0 && h > 0) {
-      const bmi = (w / (h * h)).toFixed(2);
-      document.getElementById('bmi-result').textContent = `BMI: ${bmi}`;
-    }
+    const w = parseFloat(document.getElementById('bmi-weight').value), h = parseFloat(document.getElementById('bmi-height').value) / 100;
+    if(w > 0 && h > 0) document.getElementById('bmi-result').textContent = `BMI: ${(w / (h * h)).toFixed(2)}`;
   };
-
-  // Temp
   document.getElementById('temp-convert-btn').onclick = () => {
-    const val = parseFloat(document.getElementById('temp-input').value);
-    const unit = document.getElementById('temp-unit').value;
-    if(unit === 'c') document.getElementById('temp-result').textContent = (val * 9/5 + 32).toFixed(2) + " °F";
-    else document.getElementById('temp-result').textContent = ((val - 32) * 5/9).toFixed(2) + " °C";
+    const val = parseFloat(document.getElementById('temp-input').value), unit = document.getElementById('temp-unit').value;
+    document.getElementById('temp-result').textContent = unit === 'c' ? (val * 9/5 + 32).toFixed(2) + " °F" : ((val - 32) * 5/9).toFixed(2) + " °C";
+  };
+  document.getElementById('counter-input').oninput = (e) => {
+    const text = e.target.value.trim();
+    document.getElementById('counter-result').textContent = `Characters: ${text.length} | Words: ${text ? text.split(/\s+/).length : 0}`;
   };
 </script>
-
 </body>
 </html>
