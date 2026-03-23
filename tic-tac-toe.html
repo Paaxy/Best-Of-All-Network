@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tic-Tac-Toe Bot (Wikipedia Textures)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --cell-size: min(25vw, 120px);
+      --border-color: #333;
+      --bg: #111;
+      --accent: #00c3ff;
+      --text: #f5f5f5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #222, #050505);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .game-wrapper {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(0,0,0,0.7);
+      border-radius: 16px;
+      padding: 16px 16px 20px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    h1 {
+      font-size: 1.4rem;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.8rem;
+      opacity: 0.8;
+      margin-bottom: 12px;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, var(--cell-size));
+      grid-template-rows: repeat(3, var(--cell-size));
+      gap: 0;
+      margin: 0 auto 14px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid var(--border-color);
+      background: #000;
+      touch-action: manipulation;
+    }
+    .cell {
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background-size: 80% 80%;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: background-color 0.15s ease, transform 0.08s ease;
+    }
+    .cell:active {
+      transform: scale(0.97);
+    }
+    .cell.disabled {
+      cursor: default;
+    }
+    .cell.x {
+      /* X texture from Wikipedia (tic-tac-toe X) */
+      background-image: url("https://upload.wikimedia.org/wikipedia/commons/3/32/Tic_tac_toe_X.svg");
+    }
+    .cell.o {
+      /* O texture from Wikipedia (tic-tac-toe O) */
+      background-image: url("https://upload.wikimedia.org/wikipedia/commons/1/1b/Tic_tac_toe_O.svg");
+    }
+    .status {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+    .status span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    button {
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: linear-gradient(135deg, #00c3ff, #0066ff);
+      color: #fff;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.6);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.1s ease;
+    }
+    button.secondary {
+      background: transparent;
+      border-color: rgba(255,255,255,0.25);
+      box-shadow: none;
+    }
+    button:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      filter: brightness(0.95);
+    }
+    .footer {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 0.7rem;
+      opacity: 0.7;
+    }
+    @media (max-width: 400px) {
+      h1 { font-size: 1.2rem; }
+      .subtitle { font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-wrapper">
+    <h1>Tic-Tac-Toe Bot</h1>
+    <div class="subtitle">You are <strong>X</strong>. Bot is <strong>O</strong>. Perfect-play minimax.</div>
+    <div class="board" id="board"></div>
+    <div class="status" id="status">Your turn. Tap a square.</div>
+    <div class="controls">
+      <button id="restart">Restart</button>
+      <button id="swap" class="secondary">Play as O</button>
+    </div>
+    <div class="footer">
+      Textures from Wikipedia / Wikimedia Commons.
+    </div>
+  </div>
+
+  <script>
+    const boardEl = document.getElementById("board");
+    const statusEl = document.getElementById("status");
+    const restartBtn = document.getElementById("restart");
+    const swapBtn = document.getElementById("swap");
+
+    let board = Array(9).fill(null); // 'X', 'O', or null
+    let human = "X";
+    let ai = "O";
+    let gameOver = false;
+
+    function createBoard() {
+      boardEl.innerHTML = "";
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.dataset.index = i;
+        cell.addEventListener("click", onCellClick, { passive: true });
+        boardEl.appendChild(cell);
+      }
+      render();
+    }
+
+    function onCellClick(e) {
+      if (gameOver) return;
+      const idx = parseInt(e.currentTarget.dataset.index, 10);
+      if (board[idx]) return;
+      if (currentPlayer() !== human) return;
+
+      board[idx] = human;
+      render();
+      checkGameState();
+
+      if (!gameOver) {
+        setTimeout(botMove, 200);
+      }
+    }
+
+    function currentPlayer() {
+      const xCount = board.filter(v => v === "X").length;
+      const oCount = board.filter(v => v === "O").length;
+      return xCount === oCount ? "X" : "O";
+    }
+
+    function emptyIndices(b) {
+      return b.map((v, i) => (v ? null : i)).filter(v => v !== null);
+    }
+
+    function winner(b) {
+      const wins = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      for (const [a,b2,c] of wins) {
+        if (b[a] && b[a] === b[b2] && b[a] === b[c]) return b[a];
+      }
+      return null;
+    }
+
+    function checkGameState() {
+      const w = winner(board);
+      if (w) {
+        gameOver = true;
+        statusEl.innerHTML = `<span>${w}</span> wins.`;
+        disableBoard();
+        return;
+      }
+      if (emptyIndices(board).length === 0) {
+        gameOver = true;
+        statusEl.textContent = "Draw.";
+        disableBoard();
+        return;
+      }
+      const cp = currentPlayer();
+      if (cp === human) {
+        statusEl.textContent = "Your turn.";
+      } else {
+        statusEl.textContent = "Bot thinking…";
+      }
+    }
+
+    function disableBoard() {
+      document.querySelectorAll(".cell").forEach(c => c.classList.add("disabled"));
+    }
+
+    function enableBoard() {
+      document.querySelectorAll(".cell").forEach(c => c.classList.remove("disabled"));
+    }
+
+    function render() {
+      document.querySelectorAll(".cell").forEach(cell => {
+        const idx = parseInt(cell.dataset.index, 10);
+        cell.classList.remove("x", "o");
+        const val = board[idx];
+        if (val === "X") cell.classList.add("x");
+        if (val === "O") cell.classList.add("o");
+      });
+    }
+
+    // Minimax AI (perfect play)
+    function minimax(newBoard, player) {
+      const avail = emptyIndices(newBoard);
+      const w = winner(newBoard);
+      if (w === human) return { score: -10 };
+      if (w === ai) return { score: 10 };
+      if (avail.length === 0) return { score: 0 };
+
+      const moves = [];
+      for (let i = 0; i < avail.length; i++) {
+        const idx = avail[i];
+        const move = { index: idx };
+        newBoard[idx] = player;
+
+        if (player === ai) {
+          const result = minimax(newBoard, human);
+          move.score = result.score;
+        } else {
+          const result = minimax(newBoard, ai);
+          move.score = result.score;
+        }
+
+        newBoard[idx] = null;
+        moves.push(move);
+      }
+
+      let bestMove;
+      if (player === ai) {
+        let bestScore = -Infinity;
+        for (let i = 0; i < moves.length; i++) {
+          if (moves[i].score > bestScore) {
+            bestScore = moves[i].score;
+            bestMove = i;
+          }
+        }
+      } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < moves.length; i++) {
+          if (moves[i].score < bestScore) {
+            bestScore = moves[i].score;
+            bestMove = i;
+          }
+        }
+      }
+      return moves[bestMove];
+    }
+
+    function botMove() {
+      if (gameOver) return;
+      if (currentPlayer() !== ai) return;
+
+      const move = minimax([...board], ai);
+      if (move && typeof move.index === "number") {
+        board[move.index] = ai;
+      }
+      render();
+      checkGameState();
+      if (!gameOver) enableBoard();
+    }
+
+    function resetGame(keepSides = true) {
+      board = Array(9).fill(null);
+      gameOver = false;
+      enableBoard();
+      render();
+      statusEl.textContent = human === "X" ? "Your turn." : "Bot thinking…";
+      if (!keepSides && human === "O") {
+        // If human is O, bot starts as X
+        setTimeout(botMove, 250);
+      } else if (human === "O") {
+        setTimeout(botMove, 250);
+      }
+    }
+
+    restartBtn.addEventListener("click", () => resetGame(true));
+    swapBtn.addEventListener("click", () => {
+      [human, ai] = [ai, human];
+      swapBtn.textContent = human === "X" ? "Play as O" : "Play as X";
+      resetGame(false);
+    });
+
+    createBoard();
+    checkGameState();
+  </script>
+</body>
+</html>

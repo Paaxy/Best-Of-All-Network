@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chess Bot (Wikipedia Textures)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --square-size: min(11vw, 56px);
+      --light: #f0d9b5;
+      --dark: #b58863;
+      --highlight: rgba(0, 200, 255, 0.45);
+      --move: rgba(0, 255, 127, 0.4);
+      --bg: #050505;
+      --panel-bg: rgba(0,0,0,0.75);
+      --text: #f5f5f5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #222, #050505);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .app {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--panel-bg);
+      border-radius: 16px;
+      padding: 14px 14px 18px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.06);
+      max-width: 520px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 1.3rem;
+      text-align: center;
+      margin-bottom: 2px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.8rem;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+    .board-wrapper {
+      display: flex;
+      justify-content: center;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(8, var(--square-size));
+      grid-template-rows: repeat(8, var(--square-size));
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid #333;
+      touch-action: manipulation;
+    }
+    .square {
+      position: relative;
+      width: var(--square-size);
+      height: var(--square-size);
+      background-size: 80% 80%;
+      background-position: center;
+      background-repeat: no-repeat;
+      cursor: pointer;
+      transition: background-color 0.08s ease;
+    }
+    .square.light { background-color: var(--light); }
+    .square.dark { background-color: var(--dark); }
+    .square.highlight {
+      box-shadow: inset 0 0 0 3px var(--highlight);
+    }
+    .square.move-target::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, var(--move) 0, transparent 60%);
+    }
+    .status {
+      text-align: center;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+    .status span {
+      color: #00c3ff;
+      font-weight: 600;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    button {
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: linear-gradient(135deg, #00c3ff, #0066ff);
+      color: #fff;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.6);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.1s ease;
+    }
+    button.secondary {
+      background: transparent;
+      border-color: rgba(255,255,255,0.25);
+      box-shadow: none;
+    }
+    button:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      filter: brightness(0.95);
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.7rem;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 1.15rem; }
+      .subtitle { font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Chess Bot</h1>
+    <div class="subtitle">You are <strong>White</strong>. Bot is <strong>Black</strong>. Bot plays random legal moves.</div>
+    <div class="board-wrapper">
+      <div class="board" id="board"></div>
+    </div>
+    <div class="status" id="status">Your move.</div>
+    <div class="controls">
+      <button id="restart">Restart</button>
+      <button id="flip" class="secondary">Flip board</button>
+    </div>
+    <div class="footer">
+      Piece textures from Wikipedia / Wikimedia Commons. No castling or en passant; promotion → queen.
+    </div>
+  </div>
+
+  <script>
+    const boardEl = document.getElementById("board");
+    const statusEl = document.getElementById("status");
+    const restartBtn = document.getElementById("restart");
+    const flipBtn = document.getElementById("flip");
+
+    // Piece images from Wikimedia (PNG set)
+    const pieceImg = {
+      "wP": "https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg",
+      "wR": "https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg",
+      "wN": "https://upload.wikimedia.org/wikipedia/commons/7/70/Chess_nlt45.svg",
+      "wB": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Chess_blt45.svg",
+      "wQ": "https://upload.wikimedia.org/wikipedia/commons/1/15/Chess_qlt45.svg",
+      "wK": "https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg",
+      "bP": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg",
+      "bR": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Chess_rdt45.svg",
+      "bN": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Chess_ndt45.svg",
+      "bB": "https://upload.wikimedia.org/wikipedia/commons/9/98/Chess_bdt45.svg",
+      "bQ": "https://upload.wikimedia.org/wikipedia/commons/4/47/Chess_qdt45.svg",
+      "bK": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg"
+    };
+
+    // Board representation: 8x8 array, [rank][file], rank 0 = 8th rank
+    let board = [];
+    let whiteToMove = true;
+    let selected = null;
+    let legalTargets = [];
+    let flipped = false;
+    let gameOver = false;
+
+    function initialBoard() {
+      return [
+        ["bR","bN","bB","bQ","bK","bB","bN","bR"],
+        ["bP","bP","bP","bP","bP","bP","bP","bP"],
+        [null,null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null,null],
+        ["wP","wP","wP","wP","wP","wP","wP","wP"],
+        ["wR","wN","wB","wQ","wK","wB","wN","wR"]
+      ];
+    }
+
+    function createBoardSquares() {
+      boardEl.innerHTML = "";
+      for (let r = 0; r < 8; r++) {
+        for (let f = 0; f < 8; f++) {
+          const sq = document.createElement("div");
+          sq.className = "square " + ((r + f) % 2 === 0 ? "light" : "dark");
+          sq.dataset.rank = r;
+          sq.dataset.file = f;
+          sq.addEventListener("click", onSquareClick, { passive: true });
+          boardEl.appendChild(sq);
+        }
+      }
+    }
+
+    function coordToIndex(rank, file) {
+      // If flipped, invert perspective
+      if (!flipped) return { r: rank, f: file };
+      return { r: 7 - rank, f: 7 - file };
+    }
+
+    function indexToCoord(r, f) {
+      if (!flipped) return { rank: r, file: f };
+      return { rank: 7 - r, file: 7 - f };
+    }
+
+    function renderBoard() {
+      document.querySelectorAll(".square").forEach(sq => {
+        sq.classList.remove("highlight", "move-target");
+        const r = parseInt(sq.dataset.rank, 10);
+        const f = parseInt(sq.dataset.file, 10);
+        const { rank, file } = indexToCoord(r, f);
+        const piece = board[rank][file];
+        sq.style.backgroundImage = piece ? `url("${pieceImg[piece]}")` : "none";
+      });
+
+      if (selected) {
+        const { rank, file } = selected;
+        const { r, f } = coordToIndex(rank, file);
+        const sq = document.querySelector(`.square[data-rank="${r}"][data-file="${f}"]`);
+        if (sq) sq.classList.add("highlight");
+        legalTargets.forEach(t => {
+          const { r: tr, f: tf } = coordToIndex(t.rank, t.file);
+          const tsq = document.querySelector(`.square[data-rank="${tr}"][data-file="${tf}"]`);
+          if (tsq) tsq.classList.add("move-target");
+        });
+      }
+    }
+
+    function onSquareClick(e) {
+      if (gameOver) return;
+      if (!whiteToMove) return; // human is white only in this version
+
+      const r = parseInt(e.currentTarget.dataset.rank, 10);
+      const f = parseInt(e.currentTarget.dataset.file, 10);
+      const { rank, file } = indexToCoord(r, f);
+      const piece = board[rank][file];
+
+      // If clicking a move target
+      if (selected && legalTargets.some(t => t.rank === rank && t.file === file)) {
+        makeMove(selected.rank, selected.file, rank, file);
+        afterHumanMove();
+        return;
+      }
+
+      // Select own piece
+      if (piece && piece[0] === "w") {
+        selected = { rank, file };
+        legalTargets = generateLegalMovesForSquare(rank, file, "w");
+      } else {
+        selected = null;
+        legalTargets = [];
+      }
+      renderBoard();
+    }
+
+    function inBounds(r, f) {
+      return r >= 0 && r < 8 && f >= 0 && f < 8;
+    }
+
+    function generateLegalMovesForSquare(rank, file, color) {
+      const piece = board[rank][file];
+      if (!piece || piece[0] !== color) return [];
+      const type = piece[1];
+      const moves = [];
+
+      const dir = color === "w" ? -1 : 1;
+      const startRank = color === "w" ? 6 : 1;
+
+      if (type === "P") {
+        const one = rank + dir;
+        if (inBounds(one, file) && !board[one][file]) {
+          moves.push({ rank: one, file });
+          const two = rank + 2 * dir;
+          if (rank === startRank && !board[two][file]) {
+            moves.push({ rank: two, file });
+          }
+        }
+        // captures
+        for (const df of [-1, 1]) {
+          const tr = rank + dir;
+          const tf = file + df;
+          if (inBounds(tr, tf) && board[tr][tf] && board[tr][tf][0] !== color) {
+            moves.push({ rank: tr, file: tf });
+          }
+        }
+      }
+
+      if (type === "N") {
+        const deltas = [
+          [2,1],[2,-1],[-2,1],[-2,-1],
+          [1,2],[1,-2],[-1,2],[-1,-2]
+        ];
+        for (const [dr, df] of deltas) {
+          const tr = rank + dr;
+          const tf = file + df;
+          if (!inBounds(tr, tf)) continue;
+          if (!board[tr][tf] || board[tr][tf][0] !== color) {
+            moves.push({ rank: tr, file: tf });
+          }
+        }
+      }
+
+      function slide(drs, dfs) {
+        for (let i = 0; i < drs.length; i++) {
+          const dr = drs[i];
+          const df = dfs[i];
+          let tr = rank + dr;
+          let tf = file + df;
+          while (inBounds(tr, tf)) {
+            if (!board[tr][tf]) {
+              moves.push({ rank: tr, file: tf });
+            } else {
+              if (board[tr][tf][0] !== color) {
+                moves.push({ rank: tr, file: tf });
+              }
+              break;
+            }
+            tr += dr;
+            tf += df;
+          }
+        }
+      }
+
+      if (type === "B" || type === "Q") {
+        slide([1,1,-1,-1],[1,-1,1,-1]);
+      }
+      if (type === "R" || type === "Q") {
+        slide([1,-1,0,0],[0,0,1,-1]);
+      }
+      if (type === "K") {
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let df = -1; df <= 1; df++) {
+            if (dr === 0 && df === 0) continue;
+            const tr = rank + dr;
+            const tf = file + df;
+            if (!inBounds(tr, tf)) continue;
+            if (!board[tr][tf] || board[tr][tf][0] !== color) {
+              moves.push({ rank: tr, file: tf });
+            }
+          }
+        }
+      }
+
+      // No check detection for simplicity
+      return moves;
+    }
+
+    function allMoves(color) {
+      const moves = [];
+      for (let r = 0; r < 8; r++) {
+        for (let f = 0; f < 8; f++) {
+          const p = board[r][f];
+          if (p && p[0] === color) {
+            const pieceMoves = generateLegalMovesForSquare(r, f, color);
+            pieceMoves.forEach(m => moves.push({ from: { r, f }, to: m }));
+          }
+        }
+      }
+      return moves;
+    }
+
+    function makeMove(fr, ff, tr, tf) {
+      const piece = board[fr][ff];
+      board[fr][ff] = null;
+      // Promotion to queen
+      if (piece[1] === "P" && (tr === 0 || tr === 7)) {
+        board[tr][tf] = piece[0] + "Q";
+      } else {
+        board[tr][tf] = piece;
+      }
+      selected = null;
+      legalTargets = [];
+      renderBoard();
+    }
+
+    function isKingMissing(color) {
+      for (let r = 0; r < 8; r++) {
+        for (let f = 0; f < 8; f++) {
+          if (board[r][f] === color + "K") return false;
+        }
+      }
+      return true;
+    }
+
+    function updateStatus() {
+      if (gameOver) return;
+      if (isKingMissing("w")) {
+        statusEl.innerHTML = "<span>Black</span> wins (white king captured).";
+        gameOver = true;
+        return;
+      }
+      if (isKingMissing("b")) {
+        statusEl.innerHTML = "<span>White</span> wins (black king captured).";
+        gameOver = true;
+        return;
+      }
+      statusEl.innerHTML = whiteToMove ? "Your move." : "Bot thinking…";
+    }
+
+    function afterHumanMove() {
+      whiteToMove = false;
+      updateStatus();
+      if (gameOver) return;
+      setTimeout(botMove, 350);
+    }
+
+    function botMove() {
+      if (gameOver) return;
+      const moves = allMoves("b");
+      if (moves.length === 0) {
+        statusEl.textContent = "Stalemate (no moves for black).";
+        gameOver = true;
+        return;
+      }
+      const choice = moves[Math.floor(Math.random() * moves.length)];
+      makeMove(choice.from.r, choice.from.f, choice.to.rank, choice.to.file);
+      whiteToMove = true;
+      updateStatus();
+    }
+
+    function resetGame() {
+      board = initialBoard();
+      whiteToMove = true;
+      selected = null;
+      legalTargets = [];
+      gameOver = false;
+      renderBoard();
+      updateStatus();
+    }
+
+    restartBtn.addEventListener("click", resetGame);
+    flipBtn.addEventListener("click", () => {
+      flipped = !flipped;
+      renderBoard();
+    });
+
+    // Init
+    board = initialBoard();
+    createBoardSquares();
+    renderBoard();
+    updateStatus();
+  </script>
+</body>
+</html>
