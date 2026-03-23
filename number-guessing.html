@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Neural Guesser</title>
+    <style>
+        body { background: #000 url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); color: #00ffea; text-align: center; font-family: 'Courier New', monospace; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; }
+        .box { border: 2px solid #00ffea; padding: 40px; border-radius: 20px; box-shadow: 0 0 30px rgba(0,255,234,0.2); background: rgba(0,0,0,0.8); }
+        input { background: #111; border: 1px solid #00ffea; color: #00ffea; padding: 10px; font-size: 1.5rem; width: 100px; text-align: center; }
+        button { background: #00ffea; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>SECURE DATA LINK</h2>
+        <p>GUESS THE 8-BIT KEY (1-100)</p>
+        <input type="number" id="g" min="1" max="100">
+        <br><button onclick="play()">INJECT</button>
+        <p id="h">System Idle...</p>
+    </div>
+    <script>
+        let t = Math.floor(Math.random()*100)+1;
+        function play() {
+            let v = document.getElementById('g').value;
+            let h = document.getElementById('h');
+            if(v == t) { h.innerText = "ACCESS GRANTED. RESETTING..."; t = Math.floor(Math.random()*100)+1; }
+            else h.innerText = v > t ? "SIGNAL TOO HIGH" : "SIGNAL TOO LOW";
+        }
+    </script>
+</body>
+</html>
