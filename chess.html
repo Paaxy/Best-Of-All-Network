@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Chess Bot (Wikipedia Textures)</title>
+  <title>Chess Bot (Full Rules, Wikipedia Textures)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -11,6 +11,7 @@
       --dark: #b58863;
       --highlight: rgba(0, 200, 255, 0.45);
       --move: rgba(0, 255, 127, 0.4);
+      --check: rgba(255, 80, 80, 0.6);
       --bg: #050505;
       --panel-bg: rgba(0,0,0,0.75);
       --text: #f5f5f5;
@@ -83,6 +84,9 @@
       inset: 0;
       background: radial-gradient(circle, var(--move) 0, transparent 60%);
     }
+    .square.check {
+      box-shadow: inset 0 0 0 3px var(--check);
+    }
     .status {
       text-align: center;
       font-size: 0.9rem;
@@ -137,7 +141,9 @@
 <body>
   <div class="app">
     <h1>Chess Bot</h1>
-    <div class="subtitle">You are <strong>White</strong>. Bot is <strong>Black</strong>. Bot plays random legal moves.</div>
+    <div class="subtitle">
+      You are <strong>White</strong>. Bot is <strong>Black</strong> (random legal moves). Full rules: check, mate, stalemate, castling, en passant, promotion.
+    </div>
     <div class="board-wrapper">
       <div class="board" id="board"></div>
     </div>
@@ -147,7 +153,7 @@
       <button id="flip" class="secondary">Flip board</button>
     </div>
     <div class="footer">
-      Piece textures from Wikipedia / Wikimedia Commons. No castling or en passant; promotion → queen.
+      Piece textures from Wikipedia / Wikimedia Commons.
     </div>
   </div>
 
@@ -157,7 +163,6 @@
     const restartBtn = document.getElementById("restart");
     const flipBtn = document.getElementById("flip");
 
-    // Piece images from Wikimedia (PNG set)
     const pieceImg = {
       "wP": "https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg",
       "wR": "https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg",
@@ -173,13 +178,21 @@
       "bK": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg"
     };
 
-    // Board representation: 8x8 array, [rank][file], rank 0 = 8th rank
     let board = [];
     let whiteToMove = true;
     let selected = null;
     let legalTargets = [];
     let flipped = false;
     let gameOver = false;
+
+    // Castling rights
+    let canCastle = {
+      wK: true, wQ: true,
+      bK: true, bQ: true
+    };
+
+    // En passant target square: {rank, file} or null
+    let enPassant = null;
 
     function initialBoard() {
       return [
@@ -209,7 +222,6 @@
     }
 
     function coordToIndex(rank, file) {
-      // If flipped, invert perspective
       if (!flipped) return { r: rank, f: file };
       return { r: 7 - rank, f: 7 - file };
     }
@@ -221,7 +233,7 @@
 
     function renderBoard() {
       document.querySelectorAll(".square").forEach(sq => {
-        sq.classList.remove("highlight", "move-target");
+        sq.classList.remove("highlight", "move-target", "check");
         const r = parseInt(sq.dataset.rank, 10);
         const f = parseInt(sq.dataset.file, 10);
         const { rank, file } = indexToCoord(r, f);
@@ -240,20 +252,31 @@
           if (tsq) tsq.classList.add("move-target");
         });
       }
+
+      // Highlight king in check
+      const color = whiteToMove ? "w" : "b";
+      if (isKingInCheck(board, color)) {
+        const pos = findKing(board, color);
+        if (pos) {
+          const { r, f } = coordToIndex(pos.rank, pos.file);
+          const sq = document.querySelector(`.square[data-rank="${r}"][data-file="${f}"]`);
+          if (sq) sq.classList.add("check");
+        }
+      }
     }
 
     function onSquareClick(e) {
       if (gameOver) return;
-      if (!whiteToMove) return; // human is white only in this version
+      if (!whiteToMove) return; // human is white
 
       const r = parseInt(e.currentTarget.dataset.rank, 10);
       const f = parseInt(e.currentTarget.dataset.file, 10);
       const { rank, file } = indexToCoord(r, f);
       const piece = board[rank][file];
 
-      // If clicking a move target
+      // If clicking a legal target
       if (selected && legalTargets.some(t => t.rank === rank && t.file === file)) {
-        makeMove(selected.rank, selected.file, rank, file);
+        makeMoveWithState(selected.rank, selected.file, rank, file);
         afterHumanMove();
         return;
       }
@@ -261,7 +284,7 @@
       // Select own piece
       if (piece && piece[0] === "w") {
         selected = { rank, file };
-        legalTargets = generateLegalMovesForSquare(rank, file, "w");
+        legalTargets = generateLegalMoves(board, rank, file, "w");
       } else {
         selected = null;
         legalTargets = [];
@@ -273,30 +296,121 @@
       return r >= 0 && r < 8 && f >= 0 && f < 8;
     }
 
-    function generateLegalMovesForSquare(rank, file, color) {
-      const piece = board[rank][file];
+    function cloneBoard(b) {
+      return b.map(row => row.slice());
+    }
+
+    function findKing(b, color) {
+      for (let r = 0; r < 8; r++) {
+        for (let f = 0; f < 8; f++) {
+          if (b[r][f] === color + "K") return { rank: r, file: f };
+        }
+      }
+      return null;
+    }
+
+    function isSquareAttacked(b, rank, file, byColor) {
+      const enemy = byColor;
+      const friend = byColor === "w" ? "b" : "w";
+
+      // Pawns
+      const dir = enemy === "w" ? -1 : 1;
+      for (const df of [-1, 1]) {
+        const r = rank + dir;
+        const f = file + df;
+        if (inBounds(r, f) && b[r][f] === enemy + "P") return true;
+      }
+
+      // Knights
+      const knightDeltas = [
+        [2,1],[2,-1],[-2,1],[-2,-1],
+        [1,2],[1,-2],[-1,2],[-1,-2]
+      ];
+      for (const [dr, df] of knightDeltas) {
+        const r = rank + dr;
+        const f = file + df;
+        if (inBounds(r, f) && b[r][f] === enemy + "N") return true;
+      }
+
+      // Bishops / Queens (diagonals)
+      const diagDirs = [[1,1],[1,-1],[-1,1],[-1,-1]];
+      for (const [dr, df] of diagDirs) {
+        let r = rank + dr;
+        let f = file + df;
+        while (inBounds(r, f)) {
+          const p = b[r][f];
+          if (p) {
+            if (p[0] === enemy && (p[1] === "B" || p[1] === "Q")) return true;
+            break;
+          }
+          r += dr;
+          f += df;
+        }
+      }
+
+      // Rooks / Queens (straight)
+      const straightDirs = [[1,0],[-1,0],[0,1],[0,-1]];
+      for (const [dr, df] of straightDirs) {
+        let r = rank + dr;
+        let f = file + df;
+        while (inBounds(r, f)) {
+          const p = b[r][f];
+          if (p) {
+            if (p[0] === enemy && (p[1] === "R" || p[1] === "Q")) return true;
+            break;
+          }
+          r += dr;
+          f += df;
+        }
+      }
+
+      // King
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let df = -1; df <= 1; df++) {
+          if (dr === 0 && df === 0) continue;
+          const r = rank + dr;
+          const f = file + df;
+          if (inBounds(r, f) && b[r][f] === enemy + "K") return true;
+        }
+      }
+
+      return false;
+    }
+
+    function isKingInCheck(b, color) {
+      const kingPos = findKing(b, color);
+      if (!kingPos) return false;
+      const enemy = color === "w" ? "b" : "w";
+      return isSquareAttacked(b, kingPos.rank, kingPos.file, enemy);
+    }
+
+    function generatePseudoMovesForSquare(b, rank, file, color) {
+      const piece = b[rank][file];
       if (!piece || piece[0] !== color) return [];
       const type = piece[1];
       const moves = [];
-
       const dir = color === "w" ? -1 : 1;
       const startRank = color === "w" ? 6 : 1;
 
       if (type === "P") {
         const one = rank + dir;
-        if (inBounds(one, file) && !board[one][file]) {
-          moves.push({ rank: one, file });
+        if (inBounds(one, file) && !b[one][file]) {
+          moves.push({ rank: one, file, enPassantCapture: false });
           const two = rank + 2 * dir;
-          if (rank === startRank && !board[two][file]) {
-            moves.push({ rank: two, file });
+          if (rank === startRank && !b[two][file]) {
+            moves.push({ rank: two, file, enPassantCapture: false, doublePush: true });
           }
         }
-        // captures
         for (const df of [-1, 1]) {
           const tr = rank + dir;
           const tf = file + df;
-          if (inBounds(tr, tf) && board[tr][tf] && board[tr][tf][0] !== color) {
-            moves.push({ rank: tr, file: tf });
+          if (!inBounds(tr, tf)) continue;
+          if (b[tr][tf] && b[tr][tf][0] !== color) {
+            moves.push({ rank: tr, file: tf, enPassantCapture: false });
+          }
+          // En passant
+          if (enPassant && enPassant.rank === tr && enPassant.file === tf && !b[tr][tf]) {
+            moves.push({ rank: tr, file: tf, enPassantCapture: true });
           }
         }
       }
@@ -310,7 +424,7 @@
           const tr = rank + dr;
           const tf = file + df;
           if (!inBounds(tr, tf)) continue;
-          if (!board[tr][tf] || board[tr][tf][0] !== color) {
+          if (!b[tr][tf] || b[tr][tf][0] !== color) {
             moves.push({ rank: tr, file: tf });
           }
         }
@@ -323,10 +437,10 @@
           let tr = rank + dr;
           let tf = file + df;
           while (inBounds(tr, tf)) {
-            if (!board[tr][tf]) {
+            if (!b[tr][tf]) {
               moves.push({ rank: tr, file: tf });
             } else {
-              if (board[tr][tf][0] !== color) {
+              if (b[tr][tf][0] !== color) {
                 moves.push({ rank: tr, file: tf });
               }
               break;
@@ -350,24 +464,84 @@
             const tr = rank + dr;
             const tf = file + df;
             if (!inBounds(tr, tf)) continue;
-            if (!board[tr][tf] || board[tr][tf][0] !== color) {
+            if (!b[tr][tf] || b[tr][tf][0] !== color) {
               moves.push({ rank: tr, file: tf });
             }
           }
         }
+        // Castling
+        if (color === "w" && rank === 7 && file === 4) {
+          // King side
+          if (canCastle.wK &&
+              !b[7][5] && !b[7][6] &&
+              b[7][7] === "wR" &&
+              !isSquareAttacked(b, 7, 4, "b") &&
+              !isSquareAttacked(b, 7, 5, "b") &&
+              !isSquareAttacked(b, 7, 6, "b")) {
+            moves.push({ rank: 7, file: 6, castle: "wK" });
+          }
+          // Queen side
+          if (canCastle.wQ &&
+              !b[7][1] && !b[7][2] && !b[7][3] &&
+              b[7][0] === "wR" &&
+              !isSquareAttacked(b, 7, 4, "b") &&
+              !isSquareAttacked(b, 7, 3, "b") &&
+              !isSquareAttacked(b, 7, 2, "b")) {
+            moves.push({ rank: 7, file: 2, castle: "wQ" });
+          }
+        }
+        if (color === "b" && rank === 0 && file === 4) {
+          if (canCastle.bK &&
+              !b[0][5] && !b[0][6] &&
+              b[0][7] === "bR" &&
+              !isSquareAttacked(b, 0, 4, "w") &&
+              !isSquareAttacked(b, 0, 5, "w") &&
+              !isSquareAttacked(b, 0, 6, "w")) {
+            moves.push({ rank: 0, file: 6, castle: "bK" });
+          }
+          if (canCastle.bQ &&
+              !b[0][1] && !b[0][2] && !b[0][3] &&
+              b[0][0] === "bR" &&
+              !isSquareAttacked(b, 0, 4, "w") &&
+              !isSquareAttacked(b, 0, 3, "w") &&
+              !isSquareAttacked(b, 0, 2, "w")) {
+            moves.push({ rank: 0, file: 2, castle: "bQ" });
+          }
+        }
       }
 
-      // No check detection for simplicity
       return moves;
     }
 
-    function allMoves(color) {
+    function generateLegalMoves(b, rank, file, color) {
+      const pseudo = generatePseudoMovesForSquare(b, rank, file, color);
+      const legal = [];
+      for (const m of pseudo) {
+        const stateBackup = {
+          board: cloneBoard(b),
+          canCastle: { ...canCastle },
+          enPassant: enPassant ? { ...enPassant } : null
+        };
+        makeMoveOnBoard(b, rank, file, m.rank, m.file, color, m);
+        const inCheck = isKingInCheck(b, color);
+        // restore
+        board = stateBackup.board;
+        canCastle = stateBackup.canCastle;
+        enPassant = stateBackup.enPassant;
+        if (!inCheck) {
+          legal.push(m);
+        }
+      }
+      return legal;
+    }
+
+    function allLegalMoves(b, color) {
       const moves = [];
       for (let r = 0; r < 8; r++) {
         for (let f = 0; f < 8; f++) {
-          const p = board[r][f];
+          const p = b[r][f];
           if (p && p[0] === color) {
-            const pieceMoves = generateLegalMovesForSquare(r, f, color);
+            const pieceMoves = generateLegalMoves(b, r, f, color);
             pieceMoves.forEach(m => moves.push({ from: { r, f }, to: m }));
           }
         }
@@ -375,42 +549,120 @@
       return moves;
     }
 
-    function makeMove(fr, ff, tr, tf) {
-      const piece = board[fr][ff];
-      board[fr][ff] = null;
-      // Promotion to queen
-      if (piece[1] === "P" && (tr === 0 || tr === 7)) {
-        board[tr][tf] = piece[0] + "Q";
-      } else {
-        board[tr][tf] = piece;
+    function makeMoveOnBoard(b, fr, ff, tr, tf, color, meta = {}) {
+      const piece = b[fr][ff];
+      const type = piece[1];
+
+      // Reset en passant by default
+      enPassant = null;
+
+      // Handle en passant capture
+      if (meta.enPassantCapture) {
+        const dir = color === "w" ? 1 : -1;
+        b[tr + dir][tf] = null;
       }
+
+      // Handle castling
+      if (meta.castle) {
+        if (meta.castle === "wK") {
+          b[7][4] = null;
+          b[7][6] = "wK";
+          b[7][7] = null;
+          b[7][5] = "wR";
+        } else if (meta.castle === "wQ") {
+          b[7][4] = null;
+          b[7][2] = "wK";
+          b[7][0] = null;
+          b[7][3] = "wR";
+        } else if (meta.castle === "bK") {
+          b[0][4] = null;
+          b[0][6] = "bK";
+          b[0][7] = null;
+          b[0][5] = "bR";
+        } else if (meta.castle === "bQ") {
+          b[0][4] = null;
+          b[0][2] = "bK";
+          b[0][0] = null;
+          b[0][3] = "bR";
+        }
+      } else {
+        // Normal move
+        b[fr][ff] = null;
+        // Promotion
+        if (type === "P" && (tr === 0 || tr === 7)) {
+          b[tr][tf] = color + "Q";
+        } else {
+          b[tr][tf] = piece;
+        }
+      }
+
+      // Update castling rights
+      if (piece === "wK") {
+        canCastle.wK = false;
+        canCastle.wQ = false;
+      }
+      if (piece === "bK") {
+        canCastle.bK = false;
+        canCastle.bQ = false;
+      }
+      if (piece === "wR") {
+        if (fr === 7 && ff === 0) canCastle.wQ = false;
+        if (fr === 7 && ff === 7) canCastle.wK = false;
+      }
+      if (piece === "bR") {
+        if (fr === 0 && ff === 0) canCastle.bQ = false;
+        if (fr === 0 && ff === 7) canCastle.bK = false;
+      }
+      // If rook captured, update castling rights
+      const captured = board[tr][tf];
+      if (captured === "wR") {
+        if (tr === 7 && tf === 0) canCastle.wQ = false;
+        if (tr === 7 && tf === 7) canCastle.wK = false;
+      }
+      if (captured === "bR") {
+        if (tr === 0 && tf === 0) canCastle.bQ = false;
+        if (tr === 0 && tf === 7) canCastle.bK = false;
+      }
+
+      // Set en passant target if double pawn push
+      if (type === "P" && meta.doublePush) {
+        const epRank = (fr + tr) / 2;
+        enPassant = { rank: epRank, file: ff };
+      }
+    }
+
+    function makeMoveWithState(fr, ff, tr, tf) {
+      const color = whiteToMove ? "w" : "b";
+      const legal = generateLegalMoves(board, fr, ff, color);
+      const moveMeta = legal.find(m => m.rank === tr && m.file === tf);
+      if (!moveMeta) return;
+      makeMoveOnBoard(board, fr, ff, tr, tf, color, moveMeta);
       selected = null;
       legalTargets = [];
       renderBoard();
     }
 
-    function isKingMissing(color) {
-      for (let r = 0; r < 8; r++) {
-        for (let f = 0; f < 8; f++) {
-          if (board[r][f] === color + "K") return false;
-        }
-      }
-      return true;
-    }
-
     function updateStatus() {
       if (gameOver) return;
-      if (isKingMissing("w")) {
-        statusEl.innerHTML = "<span>Black</span> wins (white king captured).";
+      const color = whiteToMove ? "w" : "b";
+      const moves = allLegalMoves(board, color);
+      const inCheck = isKingInCheck(board, color);
+
+      if (moves.length === 0) {
+        if (inCheck) {
+          statusEl.innerHTML = `<span>${whiteToMove ? "Black" : "White"}</span> wins by checkmate.`;
+        } else {
+          statusEl.textContent = "Stalemate.";
+        }
         gameOver = true;
         return;
       }
-      if (isKingMissing("b")) {
-        statusEl.innerHTML = "<span>White</span> wins (black king captured).";
-        gameOver = true;
-        return;
+
+      if (inCheck) {
+        statusEl.innerHTML = `${whiteToMove ? "Your king" : "Black king"} is in <span>check</span>.`;
+      } else {
+        statusEl.innerHTML = whiteToMove ? "Your move." : "Bot thinking…";
       }
-      statusEl.innerHTML = whiteToMove ? "Your move." : "Bot thinking…";
     }
 
     function afterHumanMove() {
@@ -422,15 +674,21 @@
 
     function botMove() {
       if (gameOver) return;
-      const moves = allMoves("b");
+      const moves = allLegalMoves(board, "b");
       if (moves.length === 0) {
-        statusEl.textContent = "Stalemate (no moves for black).";
+        const inCheck = isKingInCheck(board, "b");
+        if (inCheck) {
+          statusEl.innerHTML = "<span>White</span> wins by checkmate.";
+        } else {
+          statusEl.textContent = "Stalemate.";
+        }
         gameOver = true;
         return;
       }
       const choice = moves[Math.floor(Math.random() * moves.length)];
-      makeMove(choice.from.r, choice.from.f, choice.to.rank, choice.to.file);
+      makeMoveOnBoard(board, choice.from.r, choice.from.f, choice.to.rank, choice.to.file, "b", choice.to);
       whiteToMove = true;
+      renderBoard();
       updateStatus();
     }
 
@@ -440,6 +698,8 @@
       selected = null;
       legalTargets = [];
       gameOver = false;
+      canCastle = { wK: true, wQ: true, bK: true, bQ: true };
+      enPassant = null;
       renderBoard();
       updateStatus();
     }
